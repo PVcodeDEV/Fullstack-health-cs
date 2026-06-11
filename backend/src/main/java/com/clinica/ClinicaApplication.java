@@ -2,6 +2,7 @@ package com.clinica;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 
@@ -16,6 +17,7 @@ public class ClinicaApplication {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     Clock clock() {
         return Clock.systemDefaultZone();
     }

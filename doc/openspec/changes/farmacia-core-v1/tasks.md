@@ -72,7 +72,7 @@ Chain strategy: **stacked-to-main**
 
 ## PR #5: Integration Tests
 
-- [ ] 5.1 `@SpringBootTest`: full POS flow abrir→crear→agregarDetalle→completar→cerrar
-- [ ] 5.2 `@SpringBootTest`: SesionCaja open/close with diferencia calc
-- [ ] 5.3 `@SpringBootTest`: Reposicion list with critico filter
-- [ ] 5.4 `@DataJpaTest`: Lote near-expiry queries, Venta cascade
+- [x] 5.1 `@SpringBootTest`: full POS flow abrir→crear→agregarDetalle→completar→cerrar
+- [x] 5.2 `@SpringBootTest`: SesionCaja open/close with diferencia calc
+- [x] 5.3 `@SpringBootTest`: Reposicion list with critico filter
+- [x] 5.4 `@DataJpaTest`: Lote near-expiry queries, Venta cascade
