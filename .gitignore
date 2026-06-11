@@ -29,3 +29,6 @@ backend/src/main/resources/application-local.yml
 
 # OpenCode skills registry
 .atl/
+
+# Documentación de dominio (consolidado de reuniones)
+doc/consolidado/
