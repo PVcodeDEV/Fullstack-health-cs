@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <nav th:fragment="header" class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-bold tracking-tight">ERP Clínico</span>
+            </div>
+            <ul class="flex space-x-6 text-sm font-medium">
+                <li>
+                    <a th:href="@{/}" class="hover:text-blue-200 transition-colors duration-200">Inicio</a>
+                </li>
+                <li>
+                    <a th:href="@{#}" class="hover:text-blue-200 transition-colors duration-200">Pacientes</a>
+                </li>
+                <li>
+                    <a th:href="@{#}" class="hover:text-blue-200 transition-colors duration-200">Citas</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</body>
+</html>

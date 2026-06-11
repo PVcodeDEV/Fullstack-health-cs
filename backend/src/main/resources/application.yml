@@ -1,0 +1,138 @@
+# =============================================================================
+# ERP Clínico — Application Configuration
+# =============================================================================
+# Default profile: PostgreSQL development
+# =============================================================================
+
+spring:
+  application:
+    name: clinica-erp
+
+  # ----- Datasource (PostgreSQL) -----
+  datasource:
+    url: jdbc:postgresql://localhost:5432/csuarezdb
+    driver-class-name: org.postgresql.Driver
+    username: csosi
+    password: ${DB_PASSWORD:csosi}
+
+  # ----- SQL init (seed data) -----
+  sql:
+    init:
+      mode: always
+
+  # ----- JPA / Hibernate -----
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: com.clinica.config.CustomPostgreSQLDialect
+
+  # ----- Flyway -----
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # ----- Thymeleaf -----
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+
+  # ----- Jackson -----
+  jackson:
+    default-property-inclusion: non_null
+
+# ----- Server -----
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 30m
+
+# ----- Logging -----
+logging:
+  level:
+    com.clinica: DEBUG
+    org.springframework.security: DEBUG
+    org.flywaydb: DEBUG
+
+# ----- RRHH Planilla -----
+rrhh:
+  planilla:
+    rmv: 1130       # Remuneración Mínima Vital 2026
+    uit: 5700       # Unidad Impositiva Tributaria 2026
+    ruc-empleador: 20123456789  # RUC del empleador para SUNAT PLAME
+
+# ----- JWT & External API -----
+app:
+  jwt:
+    secret: ${JWT_SECRET:}
+    expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+  reniec:
+    sunat-url: https://ww1.sunat.gob.pe/ol-ti-itfisdenreg/itfisdenreg.htm
+    secure-url: https://api.reniec.gob.pe/secure/consulta
+    secure-token: ${RENIEC_SECURE_TOKEN:}
+    secure-enabled: false
+
+# ----- Actuator -----
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+      group:
+        readiness:
+          include: readinessState,db
+        liveness:
+          include: livenessState
+
+# =============================================================================
+# PRODUCTION PROFILE — PostgreSQL + hardened settings
+# =============================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/clinica
+    driver-class-name: org.postgresql.Driver
+    username: clinica_user
+    password: ${DB_PASSWORD}
+
+  h2:
+    console:
+      enabled: false
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  thymeleaf:
+    cache: true
+
+logging:
+  level:
+    com.clinica: INFO
+    org.springframework.security: INFO
+    org.flywaydb: INFO
+
+management:
+  endpoint:
+    health:
+      show-details: never

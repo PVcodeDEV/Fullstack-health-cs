@@ -1,0 +1,41 @@
+# Test configuration — H2 in-memory
+spring:
+  datasource:
+    url: jdbc:h2:mem:clinica-test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  sql:
+    init:
+      mode: never     # Tests set up their own data in @BeforeEach
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  cache:
+    type: none
+
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+# ----- RRHH Planilla -----
+rrhh:
+  planilla:
+    rmv: 1130
+    uit: 5700
+    ruc-empleador: 20123456789
+
+logging:
+  level:
+    com.clinica: DEBUG
+    org.flywaydb: WARN
+    org.springframework.security: WARN

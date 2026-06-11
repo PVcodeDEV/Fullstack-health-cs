@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - ERP Clínico">ERP Clínico</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex flex-col">
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <main class="flex-grow container mx-auto px-4 py-6" layout:fragment="content">
+        <!-- Page content provided by child templates -->
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer(${#dates.year(#dates.createNow())})}"></footer>
+
+    <script layout:fragment="scripts"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# Maven
+backend/target/
+*.class
+*.jar
+*.war
+
+# Frontend
+frontend/node_modules/
+frontend/.bun/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment / Secrets
+.env
+backend/src/main/resources/application-local.yml
+
+# OpenCode local config
+.opencode/
+
+# OpenCode skills registry
+.atl/
