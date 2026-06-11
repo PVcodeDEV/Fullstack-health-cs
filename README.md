@@ -64,10 +64,10 @@ com.clinica.<modulo>/
 
 ```bash
 # Crear base de datos PostgreSQL
-createdb csuarezdb
+createdb db-test
 
 # O con psql
-psql -U postgres -c "CREATE DATABASE csuarezdb;"
+psql -U postgres -c "CREATE DATABASE db-test;"
 ```
 
 ### 2. Backend
@@ -102,7 +102,6 @@ bun run watch   # Modo watch
 ### 4. Acceso
 
 - App: http://localhost:8080
-- Perfil `dev`: H2 console en http://localhost:8080/h2-console
 
 ## Configuración
 
@@ -110,7 +109,7 @@ Ver `backend/src/main/resources/application.yml`:
 
 | Variable | Default | Descripción |
 |----------|---------|-------------|
-| `DB_PASSWORD` | `csosi` (dev) | Password PostgreSQL |
+| `DB_PASSWORD` | `123456` | Password PostgreSQL |
 | `JWT_SECRET` | Requerido | Secreto para firmar JWT |
 | `JWT_EXPIRATION_MS` | `3600000` | Expiración del token (1h) |
 | `RENIEC_SECURE_TOKEN` | Opcional | Token para API segura RENIEC |
