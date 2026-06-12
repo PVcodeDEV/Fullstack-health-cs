@@ -10,4 +10,6 @@ import java.util.List;
 public interface CuentaPaqueteRepository extends JpaRepository<CuentaPaquete, Long> {
 
     List<CuentaPaquete> findByCuentaId(Long cuentaId);
+
+    boolean existsByPaqueteQuirurgicoId(Long paqueteQuirurgicoId);
 }
