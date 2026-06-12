@@ -80,6 +80,14 @@ app:
     secure-url: https://api.reniec.gob.pe/secure/consulta
     secure-token: ${RENIEC_SECURE_TOKEN:}
     secure-enabled: false
+  entidad:
+    sunat-ruc-url: https://ww1.sunat.gob.pe/ol-ti-itfisdenreg/itfisdenreg.htm
+    connect-timeout: 10000
+    read-timeout: 10000
+  caja:
+    pricing:
+      igv-porcentaje: 18
+      utilidad-porcentaje: 50
 
 # ----- Actuator -----
 management:

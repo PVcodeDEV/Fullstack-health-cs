@@ -13,6 +13,7 @@ Base package: `com.clinica.caja.liquidacion`.
 - **CTA-004** (clinica-cuenta): Caja queries Cuenta with charges for pre-liquidación generation.
 - **CAJ-003** (tarifario pricing): Precios used in liquidación come from tarifario, not calculated in liquidación.
 - **CPR-001** (caja-comprobante): After payment, Liquidación triggers Comprobante issuance.
+- **ENT-002** (entidad): Supplier payments (future) reference Empresa with PROVEEDOR role. MVP only handles CLIENTE role.
 
 ## Requirements
 

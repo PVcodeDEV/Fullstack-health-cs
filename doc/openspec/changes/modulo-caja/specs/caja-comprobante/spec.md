@@ -11,43 +11,57 @@ Base package: `com.clinica.caja.comprobante`.
 - **LIQ-003** (caja-liquidacion): Comprobante is triggered after liquidación confirms payment.
 - **MAESTRO-R-001** (maestro-catalogos-financieros): TipoComprobante seeded with Factura (01), Boleta (03), Nota Crédito (07).
 - **CAJ-005** (billing flow): Payment → Invoice → Cuenta CERRADA — comprobante is the third step.
+- **ENT-006** (entidad): Factura references `empresaId` from Empresa (RUC + razón social) instead of inline fields.
 
 ## Requirements
 
-### Requirement: CPR-001 — Electronic invoice issuance (Boleta/Factura) (CAJ-007)
+### Requirement: CPR-001 — Electronic invoice issuance (Boleta/Factura) (CAJ-007, ENT-006)
 
 - **Priority**: MUST
-- **Description**: After payment is confirmed, the system MUST issue an electronic comprobante. The cashier selects type: Boleta (for consumers, no RUC) or Factura (for businesses, requires RUC). The comprobante records: `tipoComprobanteId` (FK to maestro TipoComprobante), `serie` ("001"), `correlativo` (auto-increment, per series), `fechaEmision`, `clienteId` (FK Persona), `clienteRuc` (nullable, for Factura), `clienteRazonSocial` (nullable), `subtotal`, `igv`, `total`, `monedaId`, `liquidacionId` (FK), `xmlGenerado` (CLOB, the SUNAT XML), `estado` (EMITIDO/ANULADO). The comprobante serie for Caja Clínica is fixed to "001".
+- **Description**: After payment is confirmed, the system MUST issue an electronic comprobante. The cashier selects type: Boleta (for consumers, no RUC, references Persona via `personaId`) or Factura (for businesses, requires RUC, references Empresa via `empresaId`). The selection is mutually exclusive. The comprobante denormalizes client data at issuance time for SUNAT XML immutability: `tipoDocCliente` (SUNAT document type code: 1=DNI, 6=RUC, etc.), `numDocCliente`, `nombreCliente`, `direccionCliente`. The source references are preserved: `personaId` (nullable, for Boleta), `empresaId` (nullable, for Factura). Other fields: `tipoComprobanteId` (FK to maestro TipoComprobante), `serie` ("001"), `correlativo` (auto-increment, per series), `fechaEmision`, `subtotal`, `igv`, `total`, `monedaId`, `liquidacionId` (FK), `xmlGenerado` (CLOB, the SUNAT XML), `estado` (EMITIDO/ANULADO). The comprobante serie for Caja Clínica is fixed to "001".
 - **Acceptance Criteria**:
-  - [ ] POST `/api/v1/caja/comprobante/{liquidacionId}/emitir` with tipo=Boleta creates comprobante with estado EMITIDO
-  - [ ] POST with tipo=Factura requires `clienteRuc` and `clienteRazonSocial`
+  - [ ] POST `/api/v1/caja/comprobante/{liquidacionId}/emitir` with tipo=Boleta and `personaId` creates comprobante with estado EMITIDO
+  - [ ] POST with tipo=Factura requires `empresaId`
+  - [ ] Boleta and Factura are mutually exclusive — providing both `personaId` and `empresaId` returns 400
   - [ ] Correlativo auto-increments within Series 001
   - [ ] SUNAT XML is generated and stored in `xmlGenerado`
+  - [ ] Denormalized fields (`tipoDocCliente`, `numDocCliente`, `nombreCliente`, `direccionCliente`) are copied from Persona or Empresa at issuance time
   - [ ] The comprobante is linked to the Liquidacion via `liquidacionId`
 
 #### Scenario: CPR-001-1 — Issue Boleta for consumer
 
 - **GIVEN** a Liquidacion PAGADO with total 500.00
-- **WHEN** POST `/api/v1/caja/comprobante/{liquidacionId}/emitir` with `{ tipoComprobante: "03", clienteId: 123 }` (Boleta)
+- **AND** Persona exists with DNI "12345678", nombre "Juan Pérez"
+- **WHEN** POST `/api/v1/caja/comprobante/{liquidacionId}/emitir` with `{ tipoComprobante: "03", personaId: 123 }` (Boleta)
 - **THEN** the response is 201 with comprobante data
 - **AND** `serie` = "001", `correlativo` = "00000001" (first of series)
 - **AND** `estado` = "EMITIDO"
+- **AND** `tipoDocCliente` = "1", `numDocCliente` = "12345678", `nombreCliente` = "Juan Pérez"
 - **AND** `xmlGenerado` contains valid SUNAT XML
 
-#### Scenario: CPR-001-2 — Issue Factura for business
+#### Scenario: CPR-001-2 — Issue Factura for business with Empresa
 
 - **GIVEN** a Liquidacion PAGADO with total 5000.00
-- **WHEN** POST emitir with `{ tipoComprobante: "01", clienteId: 123, clienteRuc: "20123456789", clienteRazonSocial: "Clínica Ejemplo SAC" }`
+- **AND** Empresa exists with RUC "20123456789", razónSocial "Clínica Ejemplo SAC", dirección "Av. Principal 123, Lima"
+- **WHEN** POST emitir with `{ tipoComprobante: "01", empresaId: 5 }`
 - **THEN** the response is 201 with `tipoComprobante: "01"` (Factura)
-- **AND** the XML includes the RUC and razón social
+- **AND** `tipoDocCliente` = "6", `numDocCliente` = "20123456789", `nombreCliente` = "Clínica Ejemplo SAC", `direccionCliente` = "Av. Principal 123, Lima"
+- **AND** `empresaId` = 5, `personaId` = null
+- **AND** the XML includes the RUC, razón social, and dirección
 
-#### Scenario: CPR-001-3 — Factura missing RUC
+#### Scenario: CPR-001-3 — Factura missing empresaId
 
 - **GIVEN** tipoComprobante = Factura (01)
-- **WHEN** POST emitir without `clienteRuc`
-- **THEN** the response is 400 — RUC required for Factura
+- **WHEN** POST emitir without `empresaId`
+- **THEN** the response is 400 — Factura requires an Empresa
 
-#### Scenario: CPR-001-4 — Auto-increment correlativo
+#### Scenario: CPR-001-4 — Mutually exclusive client references
+
+- **GIVEN** both `personaId` and `empresaId` are provided
+- **WHEN** POST emitir
+- **THEN** the response is 400 — provide either personaId (Boleta) or empresaId (Factura), not both
+
+#### Scenario: CPR-001-5 — Auto-increment correlativo
 
 - **GIVEN** the last comprobante in Series 001 had correlativo "00000005"
 - **WHEN** a new comprobante is issued

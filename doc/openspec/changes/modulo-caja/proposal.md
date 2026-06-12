@@ -60,10 +60,28 @@ Clinical billing is currently scattered across modules with no centralized payme
 | CAJ-012 | Paquetes | Package = collection of prestaciones with bundled price. Admission assigns package to Cuenta |
 | CAJ-013 | Tarifario futuro seguros | Structure supports multiple tarifarios (one per aseguradora). MVP: single tarifario for particular patients |
 
+## Dependency: módulo-entidad (previo/paralelo a caja)
+
+The `com.clinica.entidad` module is a prerequisite for Caja. It manages legal entities (empresas) with RUC — used both as **clients** (invoice issuance) and **suppliers** (purchase registration). Lives in its own module because both Caja and Farmacia consume it.
+
+### Scope
+- `Empresa` entity: RUC (PK), tipo (RUC_10 / RUC_20), razónSocial, direccionFiscal, ubigeo, teléfono, email
+- Rol automático: CLIENTE / PROVEEDOR / AMBOS — detectado por contexto, no manual
+- `SunatRucClient`: consulta a SUNAT API (https://ww1.sunat.gob.pe/ol-ti-itfisdenreg/itfisdenreg.htm) con parseo diferenciado para RUC 10 (solo nombre) y RUC 20 (razón social + dirección + ubigeo)
+- CRUD Empresa + auto-role promotion (si aparece en compra y venta → AMBOS)
+- Vinculación opcional con Persona (para RUC 10, si la persona natural ya existe)
+
+### Diferencia SUNAT RUC API
+| Tipo RUC | Prefijo | Datos devueltos |
+|----------|---------|-----------------|
+| Persona Natural | RUC 10 (1er dígito) | Solo `apenomdenunciado` = nombre completo |
+| Persona Jurídica | RUC 20 (1er dígito) | Razón social + dirección fiscal + ubigeo completo |
+
 ## Integration Matrix
 
 | Module | Integration | Direction |
 |--------|-------------|-----------|
+| `entidad` | Empresa (RUC) for invoice clients and payment suppliers | Reads (nuevo módulo dependencia) |
 | `clinica.cuenta` | Reads Cuenta + Cargos; marks PENDIENTE_COBRO → CERRADA | Bidirectional |
 | `farmacia.caja` | Pharmacy consumption charges flow to patient account → Caja | Reads from clinica |
 | `maestro` | TipoComprobante, TipoMoneda, UnidadMedida catalogs | Reads |
