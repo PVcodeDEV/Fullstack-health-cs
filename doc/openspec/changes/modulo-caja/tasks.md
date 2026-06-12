@@ -53,16 +53,16 @@ Chain strategy: feature-branch-chain
 - [x] 2.9 Test: Paquete creation + deletion guard for referenced packages (TRF-004-1/2)
 - [x] 2.10 Test: `@WebMvcTest` permission enforcement (TRF-007-1)
 
-## Phase 3: SesionCaja + TipoCambio
+## Phase 3: SesionCaja + TipoCambio ✅
 
-- [ ] 3.1 Create V39 migration: `sesion_caja`, `tipo_cambio` tables
-- [ ] 3.2 Create `SesionCaja` entity with open/close/discrepancy tracking
-- [ ] 3.3 Create `TipoCambio` entity per-transaction FX rate record
-- [ ] 3.4 Create `SesionCajaService`: open (reject double), close (compute diferencia, tolerance check)
-- [ ] 3.5 Create SesionCaja DTOs and `SesionCajaController`
-- [ ] 3.6 Test: double-open rejection (SES-001-2), close scenarios (SES-002-1/2/3/4)
-- [ ] 3.7 Test: current session query (SES-003-1/2), payment-session link (SES-004-1/2)
-- [ ] 3.8 Test: farmacia role cannot open clinical session (SES-005-1)
+- [x] 3.1 Create V39 migration: `sesion_caja`, `tipo_cambio` tables
+- [x] 3.2 Create `SesionCaja` entity with open/close/discrepancy tracking
+- [x] 3.3 Create `TipoCambio` entity per-transaction FX rate record
+- [x] 3.4 Create `SesionCajaService`: open (reject double), close (compute diferencia, tolerance check)
+- [x] 3.5 Create SesionCaja DTOs and `SesionCajaController`
+- [x] 3.6 Test: double-open rejection (SES-001-2), close scenarios (SES-002-1/2/3/4)
+- [x] 3.7 Test: current session query (SES-003-1/2), payment-session link (SES-004-1/2)
+- [x] 3.8 Test: farmacia role cannot open clinical session (SES-005-1)
 
 ## Phase 4: Liquidación + Cuenta Closure
 

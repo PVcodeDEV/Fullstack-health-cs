@@ -1,0 +1,16 @@
+package com.clinica.caja.sesion.dto;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
+
+public record SesionCajaCerrarRequest(
+
+    @NotNull(message = "El monto de cierre es obligatorio")
+    @DecimalMin(value = "0.00", message = "El monto de cierre no puede ser negativo")
+    @Digits(integer = 8, fraction = 2, message = "El monto debe tener máximo 8 enteros y 2 decimales")
+    BigDecimal montoCierre
+
+) {}

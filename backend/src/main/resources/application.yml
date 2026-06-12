@@ -88,6 +88,8 @@ app:
     pricing:
       igv-porcentaje: 18
       utilidad-porcentaje: 50
+    sesion:
+      tolerancia-diferencia: 1.00
 
 # ----- Actuator -----
 management:
