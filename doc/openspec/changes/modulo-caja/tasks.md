@@ -26,32 +26,32 @@ Chain strategy: feature-branch-chain
 | 4 | Comprobante + SUNAT | PR #4 | V41 migration, Comprobante entity, SUNAT XML builder, Nota Crédito, reprint |
 | 5 | Permisos + UI + edge cases | PR #5 | DataInitializer seeds, Thymeleaf views, error handling |
 
-## Phase 1: Foundation — Módulo Entidad
+## Phase 1: Foundation — Módulo Entidad ✅
 
-- [ ] 1.1 Create V37 migration: `empresa` + `sunat_consulta_log` tables
-- [ ] 1.2 Create `Empresa` entity extending `BaseEntity` with RUC módulo-11 validation
-- [ ] 1.3 Create `EmpresaRepository` with search/filter methods
-- [ ] 1.4 Create `RucValidator` reusing Modulo11Validator with RUC weight sequence
-- [ ] 1.5 Create `SunatRucClient` with configurable HTTP timeout for SUNAT API
-- [ ] 1.6 Create `EmpresaService` with CRUD, auto-role promotion, Persona linking (ENT-002, ENT-005)
-- [ ] 1.7 Create Empresa DTOs as records with Jakarta validation
-- [ ] 1.8 Create `EmpresaController` with POST/GET/PUT/DELETE + SUNAT consult endpoint
-- [ ] 1.9 Add `app.entidad.sunat-ruc-url` and timeout to `application.yml`
-- [ ] 1.10 Test: `RucValidator` parameterized (ENT-001-2), `SunatRucClient` mock (ENT-003-1/2/3)
-- [ ] 1.11 Test: `@DataJpaTest` CRUD + duplicate rejection + role promotion (ENT-001-3, ENT-002-1/2, ENT-004-1)
+- [x] 1.1 Create V37 migration: `empresa` + `sunat_consulta_log` tables
+- [x] 1.2 Create `Empresa` entity extending `BaseEntity` with RUC módulo-11 validation
+- [x] 1.3 Create `EmpresaRepository` with search/filter methods
+- [x] 1.4 Create `RucValidator` reusing Modulo11Validator with RUC weight sequence
+- [x] 1.5 Create `SunatRucClient` with configurable HTTP timeout for SUNAT API
+- [x] 1.6 Create `EmpresaService` with CRUD, auto-role promotion, Persona linking (ENT-002, ENT-005)
+- [x] 1.7 Create Empresa DTOs as records with Jakarta validation
+- [x] 1.8 Create `EmpresaController` with POST/GET/PUT/DELETE + SUNAT consult endpoint
+- [x] 1.9 Add `app.entidad.sunat-ruc-url` and timeout to `application.yml`
+- [x] 1.10 Test: `RucValidator` parameterized (ENT-001-2), `SunatRucClient` mock (ENT-003-1/2/3)
+- [x] 1.11 Test: `@DataJpaTest` CRUD + duplicate rejection + role promotion (ENT-001-3, ENT-002-1/2, ENT-004-1)
 
-## Phase 2: Tarifario + Paquetes
+## Phase 2: Tarifario + Paquetes ✅
 
-- [ ] 2.1 Create V38 migration: `tarifario`, `tarifario_item`, `paquete`, `paquete_detalle` tables
-- [ ] 2.2 Create entities: `Tarifario`, `TarifarioItem`, `Paquete`, `PaqueteDetalle`
-- [ ] 2.3 Create repositories with temporal query methods (effective-date lookup)
-- [ ] 2.4 Create `PrecioCalculator` priced formula component (IGV + utilidad from config)
-- [ ] 2.5 Create `TarifarioService`: CRUD, price-change revision (new row per TRF-002), Paquete CRUD
-- [ ] 2.6 Create Tarifario/Paquete DTOs and `TarifarioController`
-- [ ] 2.7 Test: `PrecioCalculator` parameterized tests (TRF-003-1/2)
-- [ ] 2.8 Test: `@DataJpaTest` temporal price revision + historical query (TRF-002-1/2/3)
-- [ ] 2.9 Test: Paquete creation + deletion guard for referenced packages (TRF-004-1/2)
-- [ ] 2.10 Test: `@WebMvcTest` permission enforcement (TRF-007-1)
+- [x] 2.1 Create V38 migration: `tarifario`, `tarifario_item`, `paquete`, `paquete_detalle` tables
+- [x] 2.2 Create entities: `Tarifario`, `TarifarioItem`, `Paquete`, `PaqueteDetalle`
+- [x] 2.3 Create repositories with temporal query methods (effective-date lookup)
+- [x] 2.4 Create `PrecioCalculator` priced formula component (IGV + utilidad from config)
+- [x] 2.5 Create `TarifarioService`: CRUD, price-change revision (new row per TRF-002), Paquete CRUD
+- [x] 2.6 Create Tarifario/Paquete DTOs and `TarifarioController`
+- [x] 2.7 Test: `PrecioCalculator` parameterized tests (TRF-003-1/2)
+- [x] 2.8 Test: `@DataJpaTest` temporal price revision + historical query (TRF-002-1/2/3)
+- [x] 2.9 Test: Paquete creation + deletion guard for referenced packages (TRF-004-1/2)
+- [x] 2.10 Test: `@WebMvcTest` permission enforcement (TRF-007-1)
 
 ## Phase 3: SesionCaja + TipoCambio
 
