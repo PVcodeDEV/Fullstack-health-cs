@@ -88,13 +88,13 @@ class CtsControllerTest {
     }
 
     @Test
-    void calcular_InvalidPeriodo_ShouldReturn409() throws Exception {
+    void calcular_InvalidPeriodo_ShouldReturn400() throws Exception {
         when(ctsService.calcular(anyLong()))
             .thenThrow(new IllegalArgumentException("Periodo inválido para CTS"));
 
         mockMvc.perform(post("/api/v1/cts/calcular")
                 .param("periodoPlanillaId", "3"))
-            .andExpect(status().isConflict());
+            .andExpect(status().isBadRequest());
     }
 
     @Test

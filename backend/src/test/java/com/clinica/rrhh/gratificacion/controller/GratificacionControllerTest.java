@@ -96,13 +96,13 @@ class GratificacionControllerTest {
     }
 
     @Test
-    void calcular_InvalidPeriodo_ShouldReturn409() throws Exception {
+    void calcular_InvalidPeriodo_ShouldReturn400() throws Exception {
         when(gratificacionService.calcular(anyLong()))
             .thenThrow(new IllegalArgumentException("Periodo inválido para gratificación"));
 
         mockMvc.perform(post("/api/v1/gratificaciones/calcular")
                 .param("periodoPlanillaId", "3"))
-            .andExpect(status().isConflict());
+            .andExpect(status().isBadRequest());
     }
 
     @Test

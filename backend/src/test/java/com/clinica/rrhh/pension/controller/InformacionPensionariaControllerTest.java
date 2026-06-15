@@ -114,7 +114,7 @@ class InformacionPensionariaControllerTest {
                         "fechaAfiliacion": "2025-01-01"
                     }
                     """))
-            .andExpect(status().isConflict());
+            .andExpect(status().isBadRequest());
     }
 
     @Test
