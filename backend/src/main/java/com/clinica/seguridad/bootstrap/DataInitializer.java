@@ -87,13 +87,26 @@ public class DataInitializer implements ApplicationRunner {
         // 3. Assign all permisos to ADMIN role
         assignAllPermisosToAdmin();
 
-        // 4. Create bootstrap admin user if env vars are set
+        // 4. Assign caja and entidad permisos to CAJA role
+        assignCajaPermisos();
+
+        // 5. Assign GERENCIA permisos
+        assignGerenciaPermisos();
+
+        // 6. Assign RECEPCION permisos
+        assignRecepcionPermisos();
+
+        // 7. Assign MEDICO permisos
+        assignMedicoPermisos();
+
+        // 8. Create bootstrap admin user if env vars are set
         seedAdminUser();
     }
 
     private void seedRoles() {
         List<SeedRole> roles = List.of(
             new SeedRole("ADMIN", "Administrador", "Acceso total al sistema"),
+            new SeedRole("GERENCIA", "Gerencia", "Acceso a reportes, aprobaciones y supervisión"),
             new SeedRole("MEDICO", "Médico", "Acceso a módulos clínicos y pacientes"),
             new SeedRole("ENFERMERIA", "Enfermería", "Acceso a módulos de enfermería y pacientes"),
             new SeedRole("RECEPCION", "Recepción", "Acceso a admisión y registro de pacientes"),
@@ -178,7 +191,29 @@ public class DataInitializer implements ApplicationRunner {
             new SeedPermiso("rrhh:contrato:gestionar", "Gestionar contratos", "rrhh",
                 "Suspender, reactivar y resolver contratos"),
             new SeedPermiso("rrhh:derechohabiente:gestionar", "Gestionar derechohabientes", "rrhh",
-                "Gestión de derechohabientes")
+                "Gestión de derechohabientes"),
+
+            // Entidad (empresas, SUNAT consult)
+            new SeedPermiso("entidad:crear", "Crear empresas", "entidad",
+                "Creación de empresas/entidades"),
+            new SeedPermiso("entidad:ver", "Ver empresas", "entidad",
+                "Visualización de empresas/entidades"),
+            new SeedPermiso("entidad:editar", "Editar empresas", "entidad",
+                "Edición de empresas/entidades"),
+            new SeedPermiso("entidad:consultar-sunat", "Consultar SUNAT RUC", "entidad",
+                "Consulta de RUC en SUNAT"),
+
+            // Caja
+            new SeedPermiso("caja:crear", "Crear en caja", "caja",
+                "Creación de sesiones, tarifarios, comprobantes"),
+            new SeedPermiso("caja:ver", "Ver caja", "caja",
+                "Visualización de módulo caja"),
+            new SeedPermiso("caja:editar", "Editar caja", "caja",
+                "Edición de registros de caja"),
+            new SeedPermiso("caja:aprobar", "Aprobar operaciones de caja", "caja",
+                "Aprobación de descuentos y operaciones"),
+            new SeedPermiso("caja:anular", "Anular comprobantes", "caja",
+                "Anulación de comprobantes vía Nota de Crédito")
         );
 
         for (SeedPermiso sp : permisos) {
@@ -207,6 +242,112 @@ public class DataInitializer implements ApplicationRunner {
             }
         }
         log.info("All {} permisos assigned to ADMIN role", allPermisos.size());
+    }
+
+    private void assignCajaPermisos() {
+        Rol caja = rolRepository.findByCodigo("CAJA")
+            .orElseThrow(() -> new IllegalStateException("CAJA role not found after seeding"));
+
+        List<String> cajaPermisoCodigos = List.of(
+            "caja:crear", "caja:ver", "caja:editar", "caja:aprobar", "caja:anular",
+            "entidad:crear", "entidad:ver", "entidad:editar", "entidad:consultar-sunat"
+        );
+
+        int assigned = 0;
+        for (String codigo : cajaPermisoCodigos) {
+            var permisoOpt = permisoRepository.findByCodigo(codigo);
+            if (permisoOpt.isPresent()) {
+                Permiso permiso = permisoOpt.get();
+                RolPermisoId id = new RolPermisoId(caja.getId(), permiso.getId());
+                if (rolPermisoRepository.findById(id).isEmpty()) {
+                    rolPermisoRepository.save(new RolPermiso(id, caja, permiso));
+                    assigned++;
+                }
+            }
+        }
+        log.info("{} caja/entidad permisos assigned to CAJA role", assigned);
+    }
+
+    private void assignGerenciaPermisos() {
+        Rol gerencia = rolRepository.findByCodigo("GERENCIA")
+            .orElseThrow(() -> new IllegalStateException("GERENCIA role not found after seeding"));
+
+        // GERENCIA: approve discounts, view caja operations, view entities
+        List<String> gerenciaPermisoCodigos = List.of(
+            "caja:aprobar", "caja:ver", "caja:editar",
+            "entidad:ver", "entidad:editar",
+            "cuenta:ver"
+        );
+
+        int assigned = 0;
+        for (String codigo : gerenciaPermisoCodigos) {
+            var permisoOpt = permisoRepository.findByCodigo(codigo);
+            if (permisoOpt.isPresent()) {
+                Permiso permiso = permisoOpt.get();
+                RolPermisoId id = new RolPermisoId(gerencia.getId(), permiso.getId());
+                if (rolPermisoRepository.findById(id).isEmpty()) {
+                    rolPermisoRepository.save(new RolPermiso(id, gerencia, permiso));
+                    assigned++;
+                }
+            }
+        }
+        log.info("{} permisos assigned to GERENCIA role", assigned);
+    }
+
+    private void assignRecepcionPermisos() {
+        Rol recepcion = rolRepository.findByCodigo("RECEPCION")
+            .orElseThrow(() -> new IllegalStateException("RECEPCION role not found after seeding"));
+
+        // RECEPCION: read empresas, read sesion caja, read pre-liquidación
+        List<String> recepcionPermisoCodigos = List.of(
+            "entidad:ver",
+            "caja:ver",
+            "cuenta:ver",
+            "admision:ver", "admision:editar"
+        );
+
+        int assigned = 0;
+        for (String codigo : recepcionPermisoCodigos) {
+            var permisoOpt = permisoRepository.findByCodigo(codigo);
+            if (permisoOpt.isPresent()) {
+                Permiso permiso = permisoOpt.get();
+                RolPermisoId id = new RolPermisoId(recepcion.getId(), permiso.getId());
+                if (rolPermisoRepository.findById(id).isEmpty()) {
+                    rolPermisoRepository.save(new RolPermiso(id, recepcion, permiso));
+                    assigned++;
+                }
+            }
+        }
+        log.info("{} permisos assigned to RECEPCION role", assigned);
+    }
+
+    private void assignMedicoPermisos() {
+        Rol medico = rolRepository.findByCodigo("MEDICO")
+            .orElseThrow(() -> new IllegalStateException("MEDICO role not found after seeding"));
+
+        // MEDICO: read pre-liquidación (LIQ-007-1), clinical data access
+        List<String> medicoPermisoCodigos = List.of(
+            "caja:ver",  // for pre-liquidación preview
+            "cuenta:ver",
+            "admision:ver",
+            "hospitalizacion:ver",
+            "sop:ver",
+            "hce:ver", "hce:editar"
+        );
+
+        int assigned = 0;
+        for (String codigo : medicoPermisoCodigos) {
+            var permisoOpt = permisoRepository.findByCodigo(codigo);
+            if (permisoOpt.isPresent()) {
+                Permiso permiso = permisoOpt.get();
+                RolPermisoId id = new RolPermisoId(medico.getId(), permiso.getId());
+                if (rolPermisoRepository.findById(id).isEmpty()) {
+                    rolPermisoRepository.save(new RolPermiso(id, medico, permiso));
+                    assigned++;
+                }
+            }
+        }
+        log.info("{} permisos assigned to MEDICO role", assigned);
     }
 
     private void seedAdminUser() {

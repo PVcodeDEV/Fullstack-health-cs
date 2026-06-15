@@ -66,36 +66,36 @@ Chain strategy: feature-branch-chain
 
 ## Phase 4: Liquidación + Cuenta Closure
 
-- [ ] 4.1 Create V40 migration: `liquidacion`, `payment_leg` tables
-- [ ] 4.2 Create `Liquidacion` entity (PAGADO, linked to SesionCaja, Cuenta, TipoCambio)
-- [ ] 4.3 Create `PaymentLeg` entity + `DescuentoValidator` (20% cap, cost-floor guard)
-- [ ] 4.4 Create `LiquidacionService`: pre-liquidación view + pagar (validate discount → create payment legs → call confirmar-cobro)
-- [ ] 4.5 Verify clinica `CuentaController.confirmarCobro()` endpoint contract (already exists)
-- [ ] 4.6 Create Liquidacion DTOs and `LiquidacionController`
-- [ ] 4.7 Test: pre-liquidación generation (LIQ-002-1), non-pending rejection (LIQ-002-2)
-- [ ] 4.8 Test: multi-method payment (LIQ-001-2), sum mismatch (LIQ-001-3), referencia required (LIQ-001-4)
-- [ ] 4.9 Test: discount validation (LIQ-004-1/2/3/4), USD + TipoCambio (LIQ-005-2/3)
-- [ ] 4.10 Test: `@DataJpaTest` full flow payment → confirmar-cobro (LIQ-003-1/2)
+- [x] 4.1 Create V40 migration: `liquidacion`, `payment_leg` tables
+- [x] 4.2 Create `Liquidacion` entity (PAGADO, linked to SesionCaja, Cuenta, TipoCambio)
+- [x] 4.3 Create `PaymentLeg` entity + `DescuentoValidator` (20% cap, cost-floor guard)
+- [x] 4.4 Create `LiquidacionService`: pre-liquidación view + pagar (validate discount → create payment legs → call confirmar-cobro)
+- [x] 4.5 Verify clinica `CuentaController.confirmarCobro()` endpoint contract (already exists — made idempotent)
+- [x] 4.6 Create Liquidacion DTOs and `LiquidacionController`
+- [x] 4.7 Test: pre-liquidación generation (LIQ-002-1), non-pending rejection (LIQ-002-2)
+- [x] 4.8 Test: multi-method payment (LIQ-001-2), sum mismatch (LIQ-001-3), referencia required (LIQ-001-4)
+- [x] 4.9 Test: discount validation (LIQ-004-1/2/3/4), USD + TipoCambio (LIQ-005-2/3)
+- [x] 4.10 Test: `@DataJpaTest` full flow payment → confirmar-cobro (LIQ-003-1/2)
 
 ## Phase 5: Comprobante + SUNAT XML
 
-- [ ] 5.1 Create V41 migration: `comprobante`, `reprint_log` tables
-- [ ] 5.2 Create `Comprobante` entity (EMITIDO/ANULADO, CLOB xmlGenerado, denormalized client data)
-- [ ] 5.3 Create `ReprintLog` entity for reprint audit trail
-- [ ] 5.4 Create `SunatXmlGenerator` builder (UBL 2.1 XML for Boleta/Factura/NotaCrédito)
-- [ ] 5.5 Create `ComprobanteService`: emitir (mutually-exclusive persona/empresa, correlativo), nota-credito (state transition), reimprimir (watermark)
-- [ ] 5.6 Create Comprobante DTOs and `ComprobanteController`
-- [ ] 5.7 Test: Boleta/Factura issuance (CPR-001-1/2), missing empresaId (CPR-001-3), mutual exclusion (CPR-001-4)
-- [ ] 5.8 Test: correlativo auto-increment (CPR-001-5), series 001 enforcement (CPR-002-1)
-- [ ] 5.9 Test: Nota Crédito full/partial/exceed (CPR-003-1/2/3/4)
-- [ ] 5.10 Test: reprint watermark + log (CPR-004-1/2), XML generation validity (CPR-005-1/2)
-- [ ] 5.11 Test: `@WebMvcTest` permission enforcement (CPR-006-1/2)
+- [x] 5.1 Create V41 migration: `comprobante`, `reprint_log` tables
+- [x] 5.2 Create `Comprobante` entity (EMITIDO/ANULADO, CLOB xmlGenerado, denormalized client data)
+- [x] 5.3 Create `ReprintLog` entity for reprint audit trail
+- [x] 5.4 Create `SunatXmlGenerator` builder (UBL 2.1 XML for Boleta/Factura/NotaCrédito)
+- [x] 5.5 Create `ComprobanteService`: emitir (mutually-exclusive persona/empresa, correlativo), nota-credito (state transition), reimprimir (watermark)
+- [x] 5.6 Create Comprobante DTOs and `ComprobanteController`
+- [x] 5.7 Test: Boleta/Factura issuance (CPR-001-1/2), missing empresaId (CPR-001-3), mutual exclusion (CPR-001-4)
+- [x] 5.8 Test: correlativo auto-increment (CPR-001-5), series 001 enforcement (CPR-002-1)
+- [x] 5.9 Test: Nota Crédito full/partial/exceed (CPR-003-1/2/3/4)
+- [x] 5.10 Test: reprint watermark + log (CPR-004-1/2), XML generation validity (CPR-005-1/2)
+- [x] 5.11 Test: `@WebMvcTest` permission enforcement (CPR-006-1/2)
 
 ## Phase 6: Permissions, UI, Integration Polish
 
-- [ ] 6.1 Modify `DataInitializer` to seed `entidad:*` and `caja:*` permissions
-- [ ] 6.2 Create Thymeleaf views: Empresa search/form, Tarifario admin, Sesion open/close
-- [ ] 6.3 Create Thymeleaf views: Liquidacion preview/payment, Comprobante issuance/reprint
-- [ ] 6.4 Add HTMX interactions for inline SUNAT consultation and price preview
-- [ ] 6.5 Add RFC 9457 ProblemDetail error handling for all new endpoints
-- [ ] 6.6 Test: `@WebMvcTest` role-access matrix for all endpoint groups (ENT-007-1/2, SES-006-1/2, LIQ-007-1, CPR-006-1/2)
+- [x] 6.1 Modify `DataInitializer` to seed `entidad:*` and `caja:*` permissions
+- [x] 6.2 Create Thymeleaf views: Empresa search/form, Tarifario admin, Sesion open/close
+- [x] 6.3 Create Thymeleaf views: Liquidacion preview/payment, Comprobante issuance/reprint
+- [x] 6.4 Add HTMX interactions for inline SUNAT consultation and price preview
+- [x] 6.5 Add RFC 9457 ProblemDetail error handling for all new endpoints
+- [x] 6.6 Test: `@WebMvcTest` role-access matrix for all endpoint groups (ENT-007-1/2, SES-006-1/2, LIQ-007-1, CPR-006-1/2)

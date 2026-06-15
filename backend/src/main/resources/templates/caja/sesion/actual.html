@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Sesión de Caja</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Sesión de Caja</h1>
+        <div class="flex gap-2">
+            <a th:if="${!tieneSesionAbierta}" th:href="@{/caja/sesion/abrir}"
+               class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+               sec:authorize="hasAuthority('caja:crear')">
+                Abrir Sesión
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${tieneSesionAbierta}" class="bg-white rounded-lg shadow p-6">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-sm text-gray-600">Código</p>
+                <p class="font-semibold" th:text="${sesion.codigo()}"></p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Estado</p>
+                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800"
+                      th:text="${sesion.estado()}"></span>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Fecha Apertura</p>
+                <p class="font-semibold" th:text="${#temporals.format(sesion.fechaApertura(), 'dd/MM/yyyy HH:mm')}"></p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Monto Apertura</p>
+                <p class="font-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(sesion.montoApertura(), 1, 2)}"></p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Total Ventas</p>
+                <p class="font-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(sesion.totalVentas(), 1, 2)}"></p>
+            </div>
+        </div>
+
+        <hr class="my-4">
+
+        <form th:action="@{/api/v1/caja/sesion/{id}/cerrar(id=${sesion.id()})}"
+              method="post" class="space-y-4 max-w-md" id="close-form">
+            <h3 class="text-lg font-semibold">Cerrar Sesión</h3>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Monto de Cierre (S/)</label>
+                <input type="number" name="montoCierre" step="0.01" min="0" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                       placeholder="0.00">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Observaciones</label>
+                <textarea name="observaciones" rows="2" maxlength="255"
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"></textarea>
+            </div>
+            <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
+                    onclick="return confirm('¿Está seguro de cerrar la sesión?')">
+                Cerrar Sesión
+            </button>
+        </form>
+    </div>
+
+    <div th:if="${!tieneSesionAbierta}" class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+        <p class="text-yellow-800">No tiene una sesión de caja abierta.</p>
+        <p class="text-sm text-yellow-600 mt-2">Abra una sesión para comenzar a operar.</p>
+    </div>
+</main>
+</body>
+</html>

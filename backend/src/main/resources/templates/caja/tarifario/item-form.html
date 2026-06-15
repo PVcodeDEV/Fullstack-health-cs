@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title th:text="${editMode} ? 'Editar Item Tarifario' : 'Nuevo Item Tarifario'"></title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800" th:text="${editMode} ? 'Editar Item Tarifario' : 'Nuevo Item Tarifario'"></h1>
+        <a th:href="@{/caja/tarifario/{id}(id=${tarifario.id})}" class="text-blue-600 hover:text-blue-800">← Volver</a>
+    </div>
+
+    <form th:action="${editMode} ? @{/api/v1/caja/tarifario-item/{id}(id=${item.id()})} : @{/api/v1/caja/tarifario-item}"
+          method="post"
+          class="max-w-2xl bg-white rounded-lg shadow p-6 space-y-4">
+        <input type="hidden" name="_method" th:value="${editMode} ? 'PUT' : 'POST'">
+        <input type="hidden" name="tarifarioId" th:value="${tarifario.id}">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Código *</label>
+            <input type="text" name="codigo" maxlength="50"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                   th:value="${editMode} ? ${item.codigo()} : ''"
+                   th:readonly="${editMode}"
+                   placeholder="Ej: CON-001">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Nombre *</label>
+            <input type="text" name="nombre" maxlength="200"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                   th:value="${editMode} ? ${item.nombre()} : ''"
+                   placeholder="Ej: Consulta General">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Descripción</label>
+            <textarea name="descripcion" rows="2" maxlength="500"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                      th:value="${editMode} ? ${item.descripcion()} : ''}"
+                      placeholder="Descripción opcional"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Precio Base (S/) *</label>
+                <input type="number" name="precioBase" step="0.01" min="0.01" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                       th:value="${editMode} ? ${item.precioBase()} : ''"
+                       placeholder="0.00"
+                       hx-post="/caja/tarifario-item/price-preview"
+                       hx-trigger="keyup changed delay:500ms, change"
+                       hx-include="[name='precioBase']"
+                       hx-target="#price-preview">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Unidad de Medida</label>
+                <select name="unidadMedidaId"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                        th:value="${editMode} ? ${item.unidadMedidaId()} : ''}">
+                    <option value="">Seleccionar...</option>
+                    <option th:each="u : ${unidadesMedida}" th:value="${u.id}" th:text="${u.nombre}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div id="price-preview" class="p-3 bg-gray-50 rounded border text-sm text-green-700"></div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Fecha Desde *</label>
+            <input type="date" name="fechaDesde" required
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                   th:value="${editMode} ? ${#temporals.format(item.fechaDesde(), 'yyyy-MM-dd')} : ${#temporals.format(#dates.createNow(), 'yyyy-MM-dd')}">
+        </div>
+
+        <div class="flex gap-4 pt-4">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                <span th:text="${editMode} ? 'Guardar Cambios' : 'Crear Item'}"></span>
+            </button>
+            <a th:href="@{/caja/tarifario/{id}(id=${tarifario.id})}" class="px-6 py-2 border rounded hover:bg-gray-50 self-center">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

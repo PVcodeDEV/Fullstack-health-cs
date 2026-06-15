@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Empresas</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Empresas</h1>
+        <a th:href="@{/caja/empresa/nueva}" class="btn-primary" sec:authorize="hasAuthority('entidad:crear')">
+            + Nueva Empresa
+        </a>
+    </div>
+
+    <!-- Search -->
+    <form th:action="@{/caja/empresa}" method="get" class="mb-6 flex gap-4 items-end">
+        <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700">Buscar</label>
+            <input type="text" name="q" th:value="${q}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                   placeholder="RUC o Razón Social" hx-trigger="keyup changed delay:500ms"
+                   hx-target="#empresa-table" hx-select="#empresa-table"
+                   hx-get="@{/caja/empresa}">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Rol</label>
+            <select name="rol" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                    hx-get="@{/caja/empresa}" hx-target="#empresa-table" hx-select="#empresa-table">
+                <option value="">Todos</option>
+                <option th:each="r : ${T(com.clinica.entidad.entity.Empresa$Rol).values()}"
+                        th:value="${r.name()}" th:text="${r.name()}" th:selected="${rol == r}"></option>
+            </select>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Buscar</button>
+    </form>
+
+    <!-- Results -->
+    <div id="empresa-table" class="overflow-x-auto bg-white rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">RUC</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Razón Social</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                <tr th:each="emp : ${empresas.content}">
+                    <td class="px-4 py-3 text-sm font-mono" th:text="${emp.ruc()}"></td>
+                    <td class="px-4 py-3 text-sm" th:text="${emp.razonSocial()} ?: '-'"></td>
+                    <td class="px-4 py-3 text-sm">
+                        <span th:text="${emp.rol()}"
+                              class="px-2 py-1 rounded-full text-xs font-medium"
+                              th:classappend="${emp.rol() == 'CLIENTE'} ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'"></span>
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        <span th:text="${emp.estado()}"
+                              class="px-2 py-1 rounded-full text-xs font-medium"
+                              th:classappend="${emp.estado() == 'ACTIVO'} ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"></span>
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        <a th:href="@{/api/v1/entidad/empresa/{id}(id=${emp.id()})}"
+                           class="text-blue-600 hover:text-blue-800 mr-2">Ver</a>
+                        <a th:href="@{/caja/empresa/{id}/editar(id=${emp.id()})}"
+                           class="text-yellow-600 hover:text-yellow-800" sec:authorize="hasAuthority('entidad:editar')">Editar</a>
+                    </td>
+                </tr>
+                <tr th:if="${empresas.content.empty}">
+                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">No se encontraron empresas</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-4 flex justify-between text-sm text-gray-600" th:if="${empresas.totalPages > 1}">
+        <span>Página <span th:text="${empresas.number + 1}"></span> de <span th:text="${empresas.totalPages}"></span></span>
+        <div class="flex gap-2">
+            <a th:href="@{/caja/empresa(q=${q}, rol=${rol}, estado=${estado}, page=${empresas.number - 1})}"
+               th:classappend="${empresas.first} ? 'opacity-50 pointer-events-none' : ''"
+               class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Anterior</a>
+            <a th:href="@{/caja/empresa(q=${q}, rol=${rol}, estado=${estado}, page=${empresas.number + 1})}"
+               th:classappend="${empresas.last} ? 'opacity-50 pointer-events-none' : ''"
+               class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Siguiente</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

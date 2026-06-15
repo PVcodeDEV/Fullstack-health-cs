@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Pago - Liquidación</title>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body>
+<main layout:fragment="content">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Procesar Pago</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Pre-bill preview -->
+        <div class="bg-white rounded-lg shadow p-6" id="preview-container">
+            <h2 class="text-lg font-semibold mb-4">Resumen de Cuenta</h2>
+            <div hx-get="/caja/liquidacion/preview-fragment/{cuentaId}"
+                 hx-trigger="load"
+                 hx-target="#preview-content"
+                 hx-swap="innerHTML">
+                <div id="preview-content" class="text-center text-gray-500 py-4">Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Payment form -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-4">Datos del Pago</h2>
+            <form th:action="@{/api/v1/caja/liquidacion/{cuentaId}/pagar(cuentaId=${cuentaId})}"
+                  method="post" hx-boost="false" class="space-y-4">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Moneda</label>
+                    <select name="moneda" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                        <option value="PEN">Soles (PEN)</option>
+                        <option value="USD">Dólares (USD)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Descuento (S/)</label>
+                    <input type="number" name="descuento" step="0.01" min="0" value="0"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Método de Pago</label>
+                    <select name="pagos[0].metodoPago" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                        <option value="EFECTIVO">Efectivo</option>
+                        <option value="POS">POS/Tarjeta</option>
+                        <option value="YAPE_PLIN">Yape/Plin</option>
+                        <option value="TRANSFERENCIA">Transferencia</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Monto</label>
+                    <input type="number" name="pagos[0].monto" step="0.01" min="0"
+                           th:value="${preview.total()}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Referencia</label>
+                    <input type="text" name="pagos[0].referencia" maxlength="50"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
+                           placeholder="Nro. operación (opcional)">
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 w-full"
+                            onclick="return confirm('¿Confirmar el cobro?')">
+                        Confirmar Pago
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

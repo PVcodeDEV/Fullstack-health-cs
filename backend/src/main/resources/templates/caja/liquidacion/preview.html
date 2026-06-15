@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Pre-Liquidación</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Pre-Liquidación</h1>
+
+    <div class="bg-white rounded-lg shadow p-6 max-w-2xl">
+        <div class="mb-4">
+            <p class="text-sm text-gray-600">Cuenta N° <span class="font-semibold" th:text="${cuentaId}"></span></p>
+            <p class="text-sm text-gray-600">Estado: <span class="text-green-600 font-medium" th:text="${preview.estado()}"></span></p>
+        </div>
+
+        <table class="w-full mb-4">
+            <thead>
+                <tr class="bg-gray-50">
+                    <th class="text-left p-2 text-xs font-medium text-gray-500 uppercase">Tipo</th>
+                    <th class="text-left p-2 text-xs font-medium text-gray-500 uppercase">Descripción</th>
+                    <th class="text-right p-2 text-xs font-medium text-gray-500 uppercase">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${preview.items()}" class="border-t">
+                    <td class="p-2 text-sm" th:text="${item.tipo()}"></td>
+                    <td class="p-2 text-sm" th:text="${item.descripcion()}"></td>
+                    <td class="p-2 text-sm text-right" th:text="'S/ ' + ${#numbers.formatDecimal(item.monto(), 1, 2)}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="border-t pt-4 text-right space-y-1">
+            <p class="text-sm">Subtotal: <span class="font-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(preview.subtotal(), 1, 2)}"></span></p>
+            <p class="text-sm">IGV: <span class="font-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(preview.igv(), 1, 2)}"></span></p>
+            <p class="text-lg font-bold">Total: <span th:text="'S/ ' + ${#numbers.formatDecimal(preview.total(), 1, 2)}"></span></p>
+        </div>
+
+        <div class="mt-6 flex gap-4">
+            <a th:href="@{/caja/liquidacion/pagar/{id}(id=${cuentaId})}"
+               class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+               sec:authorize="hasAuthority('caja:crear')">
+                Procesar Pago
+            </a>
+            <a th:href="@{/caja/sesion}" class="px-6 py-2 border rounded hover:bg-gray-50">Volver</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

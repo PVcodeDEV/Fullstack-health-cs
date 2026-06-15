@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Tarifarios</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Tarifarios</h1>
+        <button class="btn-primary" onclick="document.getElementById('nuevo-tarifario-modal').classList.remove('hidden')"
+                sec:authorize="hasAuthority('caja:crear')">
+            + Nuevo Tarifario
+        </button>
+    </div>
+
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descripción</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aseguradora</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                <tr th:each="t : ${tarifarios}">
+                    <td class="px-4 py-3 text-sm font-medium">
+                        <a th:href="@{/caja/tarifario/{id}(id=${t.id})}" class="text-blue-600 hover:text-blue-800" th:text="${t.nombre}"></a>
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${t.descripcion} ?: '-'"></td>
+                    <td class="px-4 py-3 text-sm" th:text="${t.aseguradoraId} ?: '-'"></td>
+                    <td class="px-4 py-3 text-sm">
+                        <a th:href="@{/caja/tarifario/{id}(id=${t.id})}" class="text-blue-600 hover:text-blue-800">Ver items</a>
+                    </td>
+                </tr>
+                <tr th:if="${tarifarios.empty}">
+                    <td colspan="4" class="px-4 py-6 text-center text-gray-500">No hay tarifarios registrados</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Nuevo Tarifario Modal -->
+    <div id="nuevo-tarifario-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-xl font-semibold mb-4">Nuevo Tarifario</h2>
+            <form th:action="@{/api/v1/caja/tarifario}" method="post" class="space-y-4">
+                <input type="hidden" name="_method" value="POST">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nombre *</label>
+                    <input type="text" name="nombre" required maxlength="100"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Descripción</label>
+                    <textarea name="descripcion" rows="2" maxlength="255"
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Aseguradora ID</label>
+                    <input type="number" name="aseguradoraId"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                </div>
+                <div class="flex gap-4 pt-2">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Crear</button>
+                    <button type="button" onclick="document.getElementById('nuevo-tarifario-modal').classList.add('hidden')"
+                            class="px-4 py-2 border rounded hover:bg-gray-50">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

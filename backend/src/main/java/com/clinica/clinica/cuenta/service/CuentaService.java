@@ -60,17 +60,30 @@ public class CuentaService {
     public void confirmarCobro(Long cuentaId) {
         Cuenta cuenta = cuentaRepository.findById(cuentaId)
             .orElseThrow(() -> new EntityNotFoundException("Cuenta no encontrada con id: " + cuentaId));
+
+        // Idempotent: if already CERRADA, skip
+        if ("CERRADA".equals(cuenta.getEstado())) {
+            log.debug("Cuenta {} ya está CERRADA, confirmar-cobro es idempotente", cuentaId);
+            return;
+        }
+
         // Find hospitalizacion by cuentaId
         Hospitalizacion hosp = hospitalizacionRepository.findByCuentaId(cuentaId)
             .orElseThrow(() -> new EntityNotFoundException("Hospitalización no encontrada para cuenta: " + cuentaId));
+
         // Liberar cama
         Cama cama = camaRepository.findById(hosp.getCamaId())
             .orElseThrow(() -> new EntityNotFoundException("Cama no encontrada"));
-        cama.liberar();
-        camaRepository.save(cama);
-        // Actualizar estados
-        hosp.setEstado("FINALIZADO");
-        hospitalizacionRepository.save(hosp);
+
+        // Guard: skip bed release if already finalized (idempotent within the idempotent guard)
+        if (!"FINALIZADO".equals(hosp.getEstado())) {
+            cama.liberar();
+            camaRepository.save(cama);
+            hosp.setEstado("FINALIZADO");
+            hosp.setFechaAlta(LocalDateTime.now());
+            hospitalizacionRepository.save(hosp);
+        }
+
         cuenta.setEstado("CERRADA");
         cuentaRepository.save(cuenta);
         log.debug("Cobro confirmado para cuentaId={}, cama liberada", cuentaId);

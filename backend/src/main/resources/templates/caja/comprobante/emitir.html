@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Emitir Comprobante</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body>
+<main layout:fragment="content">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Emitir Comprobante Electrónico</h1>
+
+    <div class="max-w-lg bg-white rounded-lg shadow p-6">
+        <form th:attr="'hx-post=' + @{/caja/comprobante/emitir/{id}(id=${liquidacionId})}"
+              hx-target="#comprobante-result"
+              hx-swap="innerHTML"
+              class="space-y-4">
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Tipo de Comprobante *</label>
+                <select name="tipoComprobante" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+                    <option value="">Seleccionar...</option>
+                    <option value="01">Factura (01)</option>
+                    <option value="03">Boleta (03)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Serie</label>
+                <input type="text" name="serie" maxlength="4" placeholder="F001 o B001"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
+            </div>
+
+            <hr class="my-4">
+            <p class="text-sm text-gray-600 mb-2">Datos del Cliente</p>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Persona ID (Boleta)</label>
+                <input type="number" name="personaId"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
+                       placeholder="ID de persona">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Empresa ID (Factura)</label>
+                <input type="number" name="empresaId"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
+                       placeholder="ID de empresa">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Monto Total</label>
+                <input type="number" name="montoTotal" step="0.01" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
+                       placeholder="0.00">
+            </div>
+
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 w-full">
+                Emitir Comprobante
+            </button>
+        </form>
+        <div id="comprobante-result" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (evt.detail.target.id === 'comprobante-result') {
+                var html = evt.detail.target.innerHTML;
+                if (html.includes('emitido exitosamente')) {
+                    setTimeout(function() {
+                        window.location.href = '/caja/comprobante/' + html.match(/\d+/)[0];
+                    }, 2000);
+                }
+            }
+        });
+    </script>
+</main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Comprobante - <span th:text="${comprobante.serieCorrelativo()}"></span></title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">
+            Comprobante <span th:text="${comprobante.serieCorrelativo()}"></span>
+        </h1>
+        <div class="flex gap-2">
+            <a th:href="@{/api/v1/caja/comprobante/{id}/reimprimir(id=${comprobante.id()})}"
+               class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 text-sm"
+               target="_blank" sec:authorize="hasAuthority('caja:ver')">
+                Reimprimir (COPIA)
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6 max-w-2xl">
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+                <p class="text-sm text-gray-600">Serie-Correlativo</p>
+                <p class="font-semibold" th:text="${comprobante.serieCorrelativo()}"></p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Fecha Emisión</p>
+                <p class="font-semibold" th:text="${#temporals.format(comprobante.fechaEmision(), 'dd/MM/yyyy HH:mm')}"></p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Cliente (Doc)</p>
+                <p class="font-semibold" th:text="${comprobante.tipoDocCliente()} + ': ' + ${comprobante.numDocCliente()}"></p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Nombre Cliente</p>
+                <p class="font-semibold" th:text="${comprobante.nombreCliente()}"></p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Estado</p>
+                <span class="px-2 py-1 text-xs font-medium rounded-full"
+                      th:classappend="${comprobante.estado() == 'EMITIDO'} ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
+                      th:text="${comprobante.estado()}"></span>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Moneda</p>
+                <p class="font-semibold" th:text="${comprobante.moneda()}"></p>
+            </div>
+        </div>
+
+        <hr class="mb-4">
+
+        <div class="text-right space-y-1">
+            <p class="text-sm">Subtotal: <span class="font-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(comprobante.subtotal(), 1, 2)}"></span></p>
+            <p class="text-sm">IGV: <span class="font-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(comprobante.igv(), 1, 2)}"></span></p>
+            <p class="text-xl font-bold">Total: <span th:text="'S/ ' + ${#numbers.formatDecimal(comprobante.total(), 1, 2)}"></span></p>
+        </div>
+
+        <div th:if="${comprobante.motivo()}" class="mt-4 p-3 bg-yellow-50 rounded border border-yellow-200">
+            <p class="text-sm text-yellow-800"><strong>Motivo:</strong> <span th:text="${comprobante.motivo()}"></span></p>
+        </div>
+
+        <div class="mt-6 flex gap-4">
+            <a th:href="@{/caja/sesion}" class="px-6 py-2 border rounded hover:bg-gray-50">Volver</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

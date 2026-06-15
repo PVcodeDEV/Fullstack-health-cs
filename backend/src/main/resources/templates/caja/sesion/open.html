@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Abrir Sesión de Caja</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Abrir Sesión de Caja</h1>
+
+    <div class="max-w-md bg-white rounded-lg shadow p-6">
+        <form hx-post="/api/v1/caja/sesion/abrir"
+              hx-target="#result"
+              hx-swap="innerHTML"
+              class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Monto de Apertura (S/) *</label>
+                <input type="number" name="montoApertura" step="0.01" min="0.01" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                       placeholder="0.00">
+            </div>
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+                Abrir Sesión
+            </button>
+            <a th:href="@{/caja/sesion}" class="ml-2 px-6 py-2 border rounded hover:bg-gray-50">Cancelar</a>
+        </form>
+        <div id="result" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (evt.detail.target.id === 'result') {
+                var html = evt.detail.target.innerHTML;
+                if (html.includes('ABIERTA')) {
+                    setTimeout(function() { window.location.href = '/caja/sesion'; }, 2000);
+                }
+            }
+        });
+    </script>
+</main>
+</body>
+</html>
