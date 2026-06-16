@@ -97,12 +97,19 @@
 ### 3.4 Verify Phase 3
 - [x] `GET /asistencial` renders with blue theme
 
-## Phase 4 — Portal Farmacia (~250 lines)
+## Phase 4 — Portal Farmacia (~250 lines) ✅
 
 ### 4.1 Create FarmaciaPortalController
+- [x] Create controller with `GET /farmacia`
+
 ### 4.2 Create Farmacia portal layout and fragments (green theme)
+- [x] Layout, header, sidebar with green theme
+
 ### 4.3 Create Farmacia dashboard
+- [x] Dashboard with stock alerts, pending dispatches, transactions
+
 ### 4.4 Verify Phase 4
+- [x] mvn compile passes
 
 ## Phase 5 — Portal Administrativo (~250 lines)
 
