@@ -8,7 +8,7 @@
 | 400-line budget risk | Medium |
 | Chained PRs recommended | No per-phase PRs if delivered sequentially |
 
-## Phase 1 — Auth Foundation (~350 lines)
+## Phase 1 — Auth Foundation (~350 lines) ✅
 
 ### 1.1 Create PortalAuthenticationSuccessHandler
 - [x] Create `seguridad/handler/PortalAuthenticationSuccessHandler.java`
@@ -54,32 +54,32 @@
 - [x] Logout redirects to `/login?logout`
 - [x] Authenticated user hitting `/login` redirects to their portal
 
-## Phase 2 — Portal Caja (~400 lines)
+## Phase 2 — Portal Caja (~400 lines) ✅
 
 ### 2.1 Create CajaPortalController
-- [ ] Create `caja/controller/CajaPortalController.java`
-- [ ] `GET /caja` → dashboard with model data
-- [ ] `@PreAuthorize("hasAnyAuthority('caja:ver', 'ROLE_ADMIN')")`
+- [x] Create `caja/controller/CajaPortalController.java`
+- [x] `GET /caja` → dashboard with model data
+- [x] `@PreAuthorize("hasAnyAuthority('caja:ver', 'ROLE_ADMIN')")`
 
 ### 2.2 Create Caja portal layout and fragments
-- [ ] Create `templates/portal-caja/layouts/portal.html`
-- [ ] Create `templates/portal-caja/fragments/header.html`
-- [ ] Create `templates/portal-caja/fragments/sidebar.html`
-- [ ] Teal CSS variables
+- [x] Create `templates/portal-caja/layouts/portal.html`
+- [x] Create `templates/portal-caja/fragments/header.html`
+- [x] Create `templates/portal-caja/fragments/sidebar.html`
+- [x] Teal CSS variables
 
 ### 2.3 Create Caja dashboard
-- [ ] Create `templates/portal-caja/dashboard.html`
-- [ ] Summary cards: sesión actual, últimas liquidaciones
+- [x] Create `templates/portal-caja/dashboard.html`
+- [x] Summary cards: sesión actual, últimas liquidaciones
 
 ### 2.4 Migrate existing Caja templates
-- [ ] Update `templates/caja/**/*.html` → `layout:decorate="~{portal-caja/layouts/portal}"`
+- [x] Update `templates/caja/**/*.html` → `layout:decorate="~{portal-caja/layouts/portal}"`
 
 ### 2.5 Update Tailwind config
-- [ ] Add portal template paths to `frontend/tailwind.config.js`
+- [x] Add portal template paths to `frontend/tailwind.config.js`
 
 ### 2.6 Verify Phase 2
-- [ ] `mvn compile` passes
-- [ ] `bun run build` succeeds
+- [x] `mvn compile` passes
+- [x] `bun run build` succeeds
 - [ ] `GET /caja` renders Caja portal with theme
 - [ ] Existing caja pages render with new layout
 

@@ -315,6 +315,17 @@ public class ComprobanteService {
     }
 
     /**
+     * Find comprobantes emitted after a given date.
+     */
+    @Transactional(readOnly = true)
+    public List<ComprobanteResponse> findByFechaEmisionAfter(LocalDateTime fecha) {
+        return comprobanteRepository.findByFechaEmisionAfter(fecha)
+                .stream()
+                .map(c -> ComprobanteResponse.fromEntity(c, false))
+                .toList();
+    }
+
+    /**
      * Reprint a comprobante with watermark notation.
      * Reads the stored XML and returns it with "COPIA" prefix.
      * The original data is NEVER modified.

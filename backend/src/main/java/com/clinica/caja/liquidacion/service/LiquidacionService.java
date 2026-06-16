@@ -211,6 +211,34 @@ public class LiquidacionService {
     }
 
     /**
+     * Find recent liquidaciones by usuario who processed the payment.
+     */
+    @Transactional(readOnly = true)
+    public List<LiquidacionResponse> findRecentByUsuario(Long usuarioId, int limit) {
+        return liquidacionRepository.findRecentByUsuarioCobraId(usuarioId, limit)
+                .stream()
+                .map(liq -> {
+                    List<PaymentLeg> legs = paymentLegRepository.findByLiquidacionId(liq.getId());
+                    return LiquidacionResponse.fromEntity(liq, legs);
+                })
+                .toList();
+    }
+
+    /**
+     * Find liquidaciones after a given date.
+     */
+    @Transactional(readOnly = true)
+    public List<LiquidacionResponse> findByFechaAfter(LocalDateTime fecha) {
+        return liquidacionRepository.findByFechaAfter(fecha)
+                .stream()
+                .map(liq -> {
+                    List<PaymentLeg> legs = paymentLegRepository.findByLiquidacionId(liq.getId());
+                    return LiquidacionResponse.fromEntity(liq, legs);
+                })
+                .toList();
+    }
+
+    /**
      * Validates payment legs:
      * - Sum of amounts must equal the total to collect
      * - Referencia required for non-Efectivo methods

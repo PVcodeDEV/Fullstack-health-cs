@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{portal-caja/layouts/portal}">
+<head>
+    <title>Dashboard - Caja</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]">Dashboard de Caja</h1>
+        <p class="text-gray-500 mt-1">Resumen de operaciones de caja</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Sesión Actual -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Sesión Actual</h2>
+                <span th:classappend="${tieneSesionAbierta} ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                      class="px-2 py-1 text-xs font-medium rounded-full"
+                      th:text="${tieneSesionAbierta} ? 'Abierta' : 'Cerrada'">Estado</span>
+            </div>
+            <div th:if="${tieneSesionAbierta}" class="space-y-2">
+                <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Monto Apertura</span>
+                    <span class="text-sm font-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(montoApertura, 1, 2)}">S/ 0.00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Total Ventas</span>
+                    <span class="text-sm font-semibold text-teal-600" th:text="'S/ ' + ${#numbers.formatDecimal(totalVentas, 1, 2)}">S/ 0.00</span>
+                </div>
+            </div>
+            <div th:if="${!tieneSesionAbierta}">
+                <p class="text-sm text-gray-400">Sin sesión abierta</p>
+            </div>
+            <a th:href="@{/caja/sesion}"
+               class="mt-4 inline-block text-sm text-teal-600 hover:text-teal-700 font-medium">
+                Ir a Sesión →
+            </a>
+        </div>
+
+        <!-- Últimas Liquidaciones -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Liquidaciones Recientes</h2>
+                <span class="text-xs text-gray-400">Últimas 5</span>
+            </div>
+            <div th:if="${ultimasLiquidaciones != null and !ultimasLiquidaciones.isEmpty()}">
+                <p class="text-3xl font-bold text-teal-600" th:text="${ultimasLiquidaciones.size()}">0</p>
+                <p class="text-sm text-gray-500 mt-1">liquidaciones procesadas</p>
+            </div>
+            <div th:if="${ultimasLiquidaciones == null or ultimasLiquidaciones.isEmpty()}">
+                <p class="text-sm text-gray-400">Sin liquidaciones recientes</p>
+            </div>
+            <a th:href="@{/caja/liquidaciones}"
+               class="mt-4 inline-block text-sm text-teal-600 hover:text-teal-700 font-medium">
+                Ver Liquidaciones →
+            </a>
+        </div>
+
+        <!-- Comprobantes Hoy -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Comprobantes Hoy</h2>
+                <span class="text-xs text-gray-400" th:text="${#temporals.format(#temporals.createToday(), 'dd/MM/yyyy')}">Fecha</span>
+            </div>
+            <p class="text-3xl font-bold text-teal-600" th:text="${totalComprobantesHoy}">0</p>
+            <p class="text-sm text-gray-500 mt-1">comprobantes emitidos hoy</p>
+            <a th:href="@{/caja/comprobantes}"
+               class="mt-4 inline-block text-sm text-teal-600 hover:text-teal-700 font-medium">
+                Ver Comprobantes →
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Liquidaciones Recientes</h2>
+        <div th:if="${ultimasLiquidaciones != null and !ultimasLiquidaciones.isEmpty()}">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200 text-left text-gray-500">
+                            <th class="pb-3 pr-4 font-medium">ID</th>
+                            <th class="pb-3 pr-4 font-medium">Fecha</th>
+                            <th class="pb-3 pr-4 font-medium">Monto</th>
+                            <th class="pb-3 pr-4 font-medium">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="liq : ${ultimasLiquidaciones}" class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 pr-4 text-gray-900" th:text="${liq.id}">1</td>
+                            <td class="py-3 pr-4 text-gray-600" th:text="${#temporals.format(liq.fecha, 'dd/MM/yyyy HH:mm')}">-</td>
+                            <td class="py-3 pr-4 font-medium" th:text="'S/ ' + ${#numbers.formatDecimal(liq.montoTotal, 1, 2)}">0.00</td>
+                            <td class="py-3">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full"
+                                      th:classappend="${liq.estado == 'PAGADO'} ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
+                                      th:text="${liq.estado}">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div th:if="${ultimasLiquidaciones == null or ultimasLiquidaciones.isEmpty()}">
+            <p class="text-sm text-gray-400 py-4 text-center">No hay liquidaciones recientes</p>
+        </div>
+    </div>
+</main>
+</body>
+</html>
