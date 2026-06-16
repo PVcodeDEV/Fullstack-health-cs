@@ -83,19 +83,19 @@
 - [ ] `GET /caja` renders Caja portal with theme
 - [ ] Existing caja pages render with new layout
 
-## Phase 3 — Portal Asistencial (~250 lines)
+## Phase 3 — Portal Asistencial (~250 lines) ✅
 
 ### 3.1 Create AsistencialPortalController
-- [ ] Create controller with `GET /asistencial`
+- [x] Create controller with `GET /asistencial`
 
 ### 3.2 Create Asistencial portal layout and fragments
-- [ ] Portal layout, header, sidebar with blue theme
+- [x] Portal layout, header, sidebar with blue theme
 
 ### 3.3 Create Asistencial dashboard
-- [ ] Dashboard template with quick access cards
+- [x] Dashboard template with quick access cards
 
 ### 3.4 Verify Phase 3
-- [ ] `GET /asistencial` renders with blue theme
+- [x] `GET /asistencial` renders with blue theme
 
 ## Phase 4 — Portal Farmacia (~250 lines)
 
