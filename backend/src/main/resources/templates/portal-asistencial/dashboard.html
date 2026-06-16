@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{portal-asistencial/layouts/portal}">
+<head>
+    <title>Dashboard - Asistencial</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]">Portal Asistencial</h1>
+        <p class="text-gray-500 mt-1">Acceso rápido a funciones clínicas</p>
+    </div>
+
+    <!-- Quick Access Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Pacientes -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Pacientes</h3>
+            <p class="text-sm text-gray-500 mb-4">Gestión de pacientes, historial clínico y datos personales.</p>
+            <a th:href="@{#}" class="text-sm font-medium text-blue-600 hover:text-blue-700">
+                Ir a Pacientes →
+            </a>
+        </div>
+
+        <!-- Admisiones -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Admisiones</h3>
+            <p class="text-sm text-gray-500 mb-4">Registro de admisiones, hospitalización y altas.</p>
+            <a th:href="@{#}" class="text-sm font-medium text-blue-600 hover:text-blue-700">
+                Ir a Admisiones →
+            </a>
+        </div>
+
+        <!-- Búsqueda Rápida -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Búsqueda Rápida</h3>
+            <p class="text-sm text-gray-500 mb-4">Busque pacientes, historias clínicas y más.</p>
+            <div class="relative">
+                <input type="text" placeholder="Buscar paciente..."
+                       class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"/>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <p class="text-sm text-gray-500 uppercase tracking-wider font-medium">Total Pacientes</p>
+            <p class="text-3xl font-bold text-blue-600 mt-2" th:text="${totalPacientes}">0</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <p class="text-sm text-gray-500 uppercase tracking-wider font-medium">Admisiones Hoy</p>
+            <p class="text-3xl font-bold text-blue-600 mt-2" th:text="${totalAdmisionesHoy}">0</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <p class="text-sm text-gray-500 uppercase tracking-wider font-medium">SOP Hoy</p>
+            <p class="text-3xl font-bold text-blue-600 mt-2" th:text="${totalSopHoy}">0</p>
+        </div>
+    </div>
+</main>
+</body>
+</html>
