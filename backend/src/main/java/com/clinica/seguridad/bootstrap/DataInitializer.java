@@ -44,6 +44,9 @@ public class DataInitializer implements ApplicationRunner {
     private final TipoDocumentoIdentidadRepository tipoDocumentoIdentidadRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.data-initializer.enabled:true}")
+    private boolean dataInitializerEnabled;
+
     @Value("${ADMIN_USERNAME:}")
     private String adminUsername;
 
@@ -71,6 +74,10 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
+        if (!dataInitializerEnabled) {
+            log.info("DataInitializer disabled via app.data-initializer.enabled=false");
+            return;
+        }
         if (rolRepository.count() > 0) {
             log.info("Roles already seeded — skipping data initialization");
             return;
@@ -213,7 +220,15 @@ public class DataInitializer implements ApplicationRunner {
             new SeedPermiso("caja:aprobar", "Aprobar operaciones de caja", "caja",
                 "Aprobación de descuentos y operaciones"),
             new SeedPermiso("caja:anular", "Anular comprobantes", "caja",
-                "Anulación de comprobantes vía Nota de Crédito")
+                "Anulación de comprobantes vía Nota de Crédito"),
+
+            // Portal access
+            new SeedPermiso("asistencial:ver", "Acceder al Portal Asistencial", "portal",
+                "Acceso al módulo Asistencial (pacientes, admisiones, HCE)"),
+            new SeedPermiso("farmacia:ver", "Acceder al Portal Farmacia", "portal",
+                "Acceso al módulo Farmacia (despacho, stock)"),
+            new SeedPermiso("administrativo:ver", "Acceder al Portal Administrativo", "portal",
+                "Acceso al módulo Administrativo (RRHH, maestros, usuarios)")
         );
 
         for (SeedPermiso sp : permisos) {
