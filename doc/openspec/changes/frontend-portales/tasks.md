@@ -111,9 +111,17 @@
 ### 4.4 Verify Phase 4
 - [x] mvn compile passes
 
-## Phase 5 — Portal Administrativo (~250 lines)
+## Phase 5 — Portal Administrativo (~250 lines) ✅
 
 ### 5.1 Create AdministrativoPortalController
+- [x] Create controller in `seguridad` module with `GET /administrativo`
+
 ### 5.2 Create Administrativo portal layout and fragments (slate theme)
+- [x] Layout, header, sidebar with slate theme
+- [x] Portal switcher in header for ADMIN role
+
 ### 5.3 Create Administrativo dashboard
+- [x] Dashboard with cards: RRHH, Maestros, Usuarios, Seguridad
+
 ### 5.4 Verify Phase 5
+- [x] mvn compile passes
