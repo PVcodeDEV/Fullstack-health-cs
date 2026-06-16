@@ -43,7 +43,7 @@ public class PasswordChangeController {
     @PostMapping("/cambiar-contrasena")
     public String changePassword(
             Authentication authentication,
-            @RequestParam("newPassword") @NotBlank @Size(min = 6) String newPassword,
+            @RequestParam("newPassword") @NotBlank @Size(min = 8) String newPassword,
             @RequestParam("confirmPassword") String confirmPassword,
             RedirectAttributes redirectAttributes,
             HttpServletRequest request) {
@@ -53,8 +53,13 @@ public class PasswordChangeController {
             return "redirect:/cambiar-contrasena";
         }
 
-        if (newPassword.length() < 6) {
-            redirectAttributes.addFlashAttribute("error", "La contraseña debe tener al menos 6 caracteres");
+        if (newPassword.length() < 8) {
+            redirectAttributes.addFlashAttribute("error", "La contraseña debe tener al menos 8 caracteres");
+            return "redirect:/cambiar-contrasena";
+        }
+
+        if (!newPassword.matches(".*[a-zA-Z].*") || !newPassword.matches(".*[0-9].*")) {
+            redirectAttributes.addFlashAttribute("error", "La contraseña debe contener letras y números");
             return "redirect:/cambiar-contrasena";
         }
 
@@ -63,6 +68,13 @@ public class PasswordChangeController {
         }
 
         Usuario usuario = up.getUsuario();
+
+        // Validate new password is different from current
+        if (passwordEncoder.matches(newPassword, usuario.getPasswordHash())) {
+            redirectAttributes.addFlashAttribute("error", "La nueva contraseña no puede ser igual a la anterior");
+            return "redirect:/cambiar-contrasena";
+        }
+
         usuario.setPasswordHash(passwordEncoder.encode(newPassword));
         usuario.setPasswordChangeRequired(false);
         usuarioRepository.save(usuario);
