@@ -52,4 +52,7 @@ public class Usuario extends BaseEntity {
 
     @Column(name = "usu_last_login")
     private LocalDateTime lastLogin;
+
+    @Column(name = "usu_password_change_required", nullable = false)
+    private Boolean passwordChangeRequired = true;
 }

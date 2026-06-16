@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+    <!-- Admin portal switcher — only visible to ROLE_ADMIN -->
+    <div th:fragment="admin-portal-switcher" sec:authorize="hasRole('ADMIN')"
+         class="bg-yellow-50 border-b border-yellow-200 text-sm">
+        <div class="container mx-auto px-4 py-1.5 flex items-center justify-between">
+            <span class="text-yellow-800 font-medium">Administrador</span>
+            <div class="flex space-x-4">
+                <a th:href="@{/asistencial}" class="text-blue-600 hover:text-blue-800 transition-colors">Asistencial</a>
+                <a th:href="@{/farmacia}" class="text-green-600 hover:text-green-800 transition-colors">Farmacia</a>
+                <a th:href="@{/caja}" class="text-teal-600 hover:text-teal-800 transition-colors">Caja</a>
+                <a th:href="@{/administrativo}" class="text-slate-600 hover:text-slate-800 transition-colors">Administrativo</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

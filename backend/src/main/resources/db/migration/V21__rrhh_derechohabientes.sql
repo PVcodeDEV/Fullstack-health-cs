@@ -1,7 +1,7 @@
 CREATE TABLE tb_derechohabientes (
     der_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     der_trabajador_id BIGINT NOT NULL REFERENCES tb_trabajadores(tra_id),
-    der_persona_id BIGINT NOT NULL REFERENCES tb_personas(per_id),
+    der_persona_id BIGINT NOT NULL REFERENCES tb_personas(pers_persona_id),
     der_relacion VARCHAR(20) NOT NULL,
     der_fecha_inicio DATE NOT NULL,
     der_fecha_fin DATE,
@@ -10,7 +10,7 @@ CREATE TABLE tb_derechohabientes (
     der_created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     der_updated_at TIMESTAMP,
     CONSTRAINT fk_der_trabajador FOREIGN KEY (der_trabajador_id) REFERENCES tb_trabajadores(tra_id),
-    CONSTRAINT fk_der_persona FOREIGN KEY (der_persona_id) REFERENCES tb_personas(per_id),
+    CONSTRAINT fk_der_persona FOREIGN KEY (der_persona_id) REFERENCES tb_personas(pers_persona_id),
     CONSTRAINT ck_der_relacion CHECK (der_relacion IN ('CONYUGE', 'HIJO', 'CONCUBINO', 'PADRE', 'MADRE')),
     CONSTRAINT ck_der_estado CHECK (der_estado IN ('ACTIVO', 'INACTIVO'))
 );

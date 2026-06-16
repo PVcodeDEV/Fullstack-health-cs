@@ -1,13 +1,16 @@
 package com.clinica.seguridad.config;
 
+import com.clinica.seguridad.handler.PortalAuthenticationSuccessHandler;
 import com.clinica.seguridad.service.UsuarioDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -28,11 +31,17 @@ public class SecurityConfig {
 
     private final UsuarioDetailsService usuarioDetailsService;
     private final JwtAuthConverter jwtAuthConverter;
+    private final PortalAuthenticationSuccessHandler portalAuthenticationSuccessHandler;
+    private final PasswordEncoder passwordEncoder;
 
     public SecurityConfig(UsuarioDetailsService usuarioDetailsService,
-                          JwtAuthConverter jwtAuthConverter) {
+                          JwtAuthConverter jwtAuthConverter,
+                          PortalAuthenticationSuccessHandler portalAuthenticationSuccessHandler,
+                          PasswordEncoder passwordEncoder) {
         this.usuarioDetailsService = usuarioDetailsService;
         this.jwtAuthConverter = jwtAuthConverter;
+        this.portalAuthenticationSuccessHandler = portalAuthenticationSuccessHandler;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -88,23 +97,30 @@ public class SecurityConfig {
     @Bean
     @Order(3)
     public SecurityFilterChain browserFilterChain(HttpSecurity http) throws Exception {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(usuarioDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+
         http
+            .authenticationProvider(authProvider)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/js/**", "/h2-console/**").permitAll()
+                .requestMatchers("/login", "/cambiar-contrasena", "/css/**", "/js/**", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/dashboard")
+                .successHandler(portalAuthenticationSuccessHandler)
                 .permitAll()
+            )
+            .rememberMe(remember -> remember
+                .key("ClinicaErpRememberMeKey2026")
+                .tokenValiditySeconds(1209600) // 14 days
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout"))
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/h2-console/**"))
             .headers(headers -> headers
-                .frameOptions(frame -> frame.sameOrigin()))
-            .userDetailsService(usuarioDetailsService);
+                .frameOptions(frame -> frame.sameOrigin()));
         return http.build();
     }
 }

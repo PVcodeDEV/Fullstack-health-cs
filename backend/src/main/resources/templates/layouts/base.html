@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - ERP Clínico">ERP Clínico</title>
+    <link rel="stylesheet" th:href="@{/css/output.css}"/>
+    <style>
+        :root {
+            --portal-primary: #3b82f6;
+            --portal-secondary: #2563eb;
+            --portal-accent: #f59e0b;
+            --portal-bg: #f8fafc;
+            --portal-text: #1e293b;
+            --portal-sidebar-bg: #ffffff;
+            --portal-sidebar-text: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[var(--portal-bg)] text-[var(--portal-text)]">
+
+    <!-- Header: provided by each portal's header fragment -->
+    <div th:replace="~{${portalHeader} :: header}"></div>
+
+    <div class="flex flex-1">
+        <!-- Sidebar: provided by each portal's sidebar fragment -->
+        <aside th:replace="~{${portalSidebar} :: sidebar}"></aside>
+
+        <!-- Main content area -->
+        <main class="flex-1 p-6" layout:fragment="content">
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 text-center py-4 text-sm">
+        <p>© <span th:text="${#dates.year(#dates.createNow())}">2026</span> ERP Clínico. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Per-page scripts -->
+    <script layout:fragment="scripts"></script>
+</body>
+</html>

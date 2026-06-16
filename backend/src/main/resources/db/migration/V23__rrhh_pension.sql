@@ -40,10 +40,10 @@ CREATE UNIQUE INDEX idx_ath_afp_vigencia ON tb_afp_tasas_historicas(ath_afp_id, 
 
 -- Seed current rates (2026)
 INSERT INTO tb_afp_tasas_historicas (ath_afp_id, ath_tipo_comision, ath_tasa, ath_prima_seguro, ath_vigencia_desde)
-SELECT afp_id, 'FLUJO', 1.8500, 0.6900, '2026-01-01' FROM tb_afps WHERE afp_codigo = 'PRIMA'
-UNION ALL SELECT afp_id, 'FLUJO', 1.7500, 0.6200, '2026-01-01' FROM tb_afps WHERE afp_codigo = 'PROFUTURO'
-UNION ALL SELECT afp_id, 'FLUJO', 1.6000, 0.6400, '2026-01-01' FROM tb_afps WHERE afp_codigo = 'HABITAT'
-UNION ALL SELECT afp_id, 'FLUJO', 1.6900, 0.6700, '2026-01-01' FROM tb_afps WHERE afp_codigo = 'INTEGRA';
+SELECT afp_id, 'FLUJO', 1.8500, 0.6900, DATE '2026-01-01' FROM tb_afps WHERE afp_codigo = 'PRIMA'
+UNION ALL SELECT afp_id, 'FLUJO', 1.7500, 0.6200, DATE '2026-01-01' FROM tb_afps WHERE afp_codigo = 'PROFUTURO'
+UNION ALL SELECT afp_id, 'FLUJO', 1.6000, 0.6400, DATE '2026-01-01' FROM tb_afps WHERE afp_codigo = 'HABITAT'
+UNION ALL SELECT afp_id, 'FLUJO', 1.6900, 0.6700, DATE '2026-01-01' FROM tb_afps WHERE afp_codigo = 'INTEGRA';
 
 -- 3. Worker pension info (1:1 with Trabajador)
 CREATE TABLE tb_informacion_pensionaria (

@@ -45,7 +45,7 @@ CREATE TABLE tb_ventas (
     CONSTRAINT fk_vent_sesion FOREIGN KEY (vent_sesion_caja_id)
         REFERENCES tb_sesiones_caja(scaj_id),
     CONSTRAINT fk_vent_cliente FOREIGN KEY (vent_cliente_persona_id)
-        REFERENCES tb_personas(person_id),
+        REFERENCES tb_personas(pers_persona_id),
     CONSTRAINT uq_vent_sesion_correlativo UNIQUE (vent_sesion_caja_id, vent_correlativo)
 );
 
