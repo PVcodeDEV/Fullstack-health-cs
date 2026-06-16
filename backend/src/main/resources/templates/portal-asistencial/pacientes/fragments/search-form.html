@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="resultados">
+    <div th:if="${searchQuery != null and searchQuery.isBlank() == false and pacientes.isEmpty()}">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <p class="text-gray-500">No se encontraron pacientes</p>
+        </div>
+    </div>
+    <div th:if="${pacientes.isEmpty() == false}">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                <p class="text-sm text-gray-600" th:text="${#lists.size(pacientes) + ' resultado(s) encontrado(s)'}">3 resultados encontrados</p>
+            </div>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">N° Documento</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombres</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Apellidos</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr th:each="paciente : ${pacientes}">
+                        <td class="px-4 py-3 text-sm text-gray-800" th:text="${paciente.personaNumeroDocumento}">12345678</td>
+                        <td class="px-4 py-3 text-sm text-gray-600" th:text="${paciente.personaNombres}">Juan</td>
+                        <td class="px-4 py-3 text-sm text-gray-600" th:text="${paciente.personaApellidoPaterno}">Pérez</td>
+                        <td class="px-4 py-3">
+                            <a th:href="@{/asistencial/pacientes/{id}(id=${paciente.id})}"
+                               class="text-sm font-medium text-blue-600 hover:text-blue-700">
+                                Ver detalle →
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>
