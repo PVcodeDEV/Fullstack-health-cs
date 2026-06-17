@@ -20,6 +20,7 @@ public class AsistencialPortalController {
         // Set portal fragments for blue theme
         model.addAttribute("portalHeader", "portal-asistencial/fragments/header");
         model.addAttribute("portalSidebar", "portal-asistencial/fragments/sidebar");
+        model.addAttribute("activePage", "asistencial");
 
         return "portal-asistencial/dashboard";
     }
