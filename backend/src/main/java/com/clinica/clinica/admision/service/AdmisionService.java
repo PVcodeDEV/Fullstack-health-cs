@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -53,14 +54,67 @@ public class AdmisionService {
     @Transactional(readOnly = true)
     public List<Persona> buscarPaciente(String query) {
         if (query == null || query.isBlank()) return List.of();
-        // Try exact match by DNI first
         var byDni = personaRepository.findByNumeroDocumento(query);
         if (byDni.isPresent()) return List.of(byDni.get());
-        // Fallback: ILIKE search by nombres or apellidos
         List<Persona> results = new ArrayList<>();
         results.addAll(personaRepository.findByNombresContainingIgnoreCase(query));
         results.addAll(personaRepository.findByApellidoPaternoContainingIgnoreCase(query));
         return results;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CuentaPaquete> getPaquetesActivos() {
+        return cuentaPaqueteRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public CuentaPaquete getPaqueteById(Long id) {
+        return cuentaPaqueteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Paquete no encontrado: " + id));
+    }
+
+    public Cuenta crearCuentaConSolicitud(Long pacienteId, Long paqueteId, Long camaId) {
+        Persona paciente = personaRepository.findById(pacienteId)
+                .orElseThrow(() -> new EntityNotFoundException("Paciente no encontrado: " + pacienteId));
+
+        Cuenta cuenta = new Cuenta();
+        cuenta.setPacienteId(pacienteId);
+        cuenta.setPaqueteQuirurgicoId(paqueteId);
+        cuenta.setFechaApertura(LocalDateTime.now());
+        cuenta.setEstado("ABIERTA");
+        cuenta = cuentaRepository.save(cuenta);
+        log.debug("Cuenta created id={}, paciente={}, paquete={}", cuenta.getId(), pacienteId, paqueteId);
+
+        SolicitudHospitalizacion sol = new SolicitudHospitalizacion();
+        sol.setCuentaId(cuenta.getId());
+        sol.setTipoHabitacionId(paqueteId);
+        sol.setEstado("PENDIENTE");
+        sol.setFechaSolicitud(LocalDateTime.now());
+        solicitudRepository.save(sol);
+
+        if (camaId != null) {
+            Cama cama = camaRepository.findById(camaId)
+                    .orElseThrow(() -> new EntityNotFoundException("Cama no encontrada: " + camaId));
+            cama.ocupar();
+            camaRepository.save(cama);
+
+            sol.setEstado("ASIGNADA");
+            solicitudRepository.save(sol);
+        }
+
+        return cuenta;
+    }
+
+    public void registrarDiagnostico(Long cuentaId, String codigoCIE11, String descripcion, String tipo) {
+        Cuenta cuenta = cuentaRepository.findById(cuentaId)
+                .orElseThrow(() -> new EntityNotFoundException("Cuenta no encontrada: " + cuentaId));
+
+        AdmisionDiagnostico diag = new AdmisionDiagnostico();
+        diag.setCuentaId(cuentaId);
+        diag.setCodigoCIE11(codigoCIE11);
+        diag.setTipo(tipo != null ? tipo : "PRINCIPAL");
+        diagnosticoRepository.save(diag);
+        log.debug("Diagnostico registrado para cuentaId={}, CIE-11={}", cuentaId, codigoCIE11);
     }
 
     public CuentaResponse crearCuenta(CuentaRequest request) {
