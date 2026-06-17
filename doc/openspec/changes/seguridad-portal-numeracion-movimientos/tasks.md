@@ -44,12 +44,12 @@ Tracker: `feature/seguridad-portal-numeracion` (base: main).
 
 ## Fase 1b: Portal Base — Controller + Layout + Dashboard (PR 1b)
 
-- [ ] 1b.1 Crear `SeguridadPortalController` con endpoints dashboard, usuarios, roles, permisos, config-api, numeración, tipos-movimiento
-- [ ] 1b.2 Crear layout `portal.html` con CSS variables indigo
-- [ ] 1b.3 Crear fragments: `header.html`, `sidebar.html`
-- [ ] 1b.4 Crear template `dashboard.html`
-- [ ] 1b.5 Modificar `PortalAuthenticationSuccessHandler`: redirect a `/seguridad` para `seguridad:ver`
-- [ ] 1b.6 Test: compile + smoke test portal carga
+- [x] 1b.1 Crear `SeguridadPortalController` con endpoints dashboard, usuarios, roles, permisos, config-api, numeración, tipos-movimiento
+- [x] 1b.2 Crear layout `portal.html` con CSS variables indigo
+- [x] 1b.3 Crear fragments: `header.html`, `sidebar.html`
+- [x] 1b.4 Crear template `dashboard.html`
+- [x] 1b.5 Modificar `PortalAuthenticationSuccessHandler`: redirect a `/seguridad` para `seguridad:ver`
+- [x] 1b.6 Test: compile + smoke test portal carga
 
 ## Fase 1c: User & Role CRUD Templates (PR 1c)
 
