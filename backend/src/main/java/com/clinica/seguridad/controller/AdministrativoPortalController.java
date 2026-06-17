@@ -13,6 +13,7 @@ public class AdministrativoPortalController {
     public String dashboard(Model model) {
         model.addAttribute("portalHeader", "portal-administrativo/fragments/header");
         model.addAttribute("portalSidebar", "portal-administrativo/fragments/sidebar");
+        model.addAttribute("activePage", "administrativo");
         return "portal-administrativo/dashboard";
     }
 }

@@ -57,6 +57,7 @@ public class CajaPortalController {
         // Set portal fragments
         model.addAttribute("portalHeader", "portal-caja/fragments/header");
         model.addAttribute("portalSidebar", "portal-caja/fragments/sidebar");
+        model.addAttribute("activePage", "caja");
 
         return "portal-caja/dashboard";
     }
