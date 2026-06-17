@@ -4,7 +4,9 @@ import com.clinica.persona.entity.Persona;
 import com.clinica.persona.repository.PersonaRepository;
 import com.clinica.seguridad.dto.RolResponse;
 import com.clinica.seguridad.dto.UsuarioResponse;
+import com.clinica.seguridad.entity.NumeracionControl;
 import com.clinica.seguridad.entity.Rol;
+import com.clinica.seguridad.entity.TipoMovimiento;
 import com.clinica.seguridad.entity.Usuario;
 import com.clinica.seguridad.entity.UsuarioRol;
 import com.clinica.seguridad.entity.UsuarioRolId;
@@ -13,8 +15,11 @@ import com.clinica.seguridad.repository.RolRepository;
 import com.clinica.seguridad.repository.UsuarioRepository;
 import com.clinica.seguridad.repository.ConfiguracionApiRepository;
 import com.clinica.seguridad.repository.UsuarioRolRepository;
+import com.clinica.seguridad.service.ConfiguracionApiService;
+import com.clinica.seguridad.service.NumeracionControlService;
 import com.clinica.seguridad.service.PermisoService;
 import com.clinica.seguridad.service.RolService;
+import com.clinica.seguridad.service.TipoMovimientoService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +47,9 @@ public class SeguridadPortalController {
     private final PersonaRepository personaRepository;
     private final RolService rolService;
     private final PermisoService permisoService;
+    private final ConfiguracionApiService configuracionApiService;
+    private final NumeracionControlService numeracionControlService;
+    private final TipoMovimientoService tipoMovimientoService;
     private final PasswordEncoder passwordEncoder;
 
     public SeguridadPortalController(UsuarioRepository usuarioRepository,
@@ -51,6 +60,9 @@ public class SeguridadPortalController {
                                       PersonaRepository personaRepository,
                                       RolService rolService,
                                       PermisoService permisoService,
+                                      ConfiguracionApiService configuracionApiService,
+                                      NumeracionControlService numeracionControlService,
+                                      TipoMovimientoService tipoMovimientoService,
                                       PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
@@ -60,6 +72,9 @@ public class SeguridadPortalController {
         this.personaRepository = personaRepository;
         this.rolService = rolService;
         this.permisoService = permisoService;
+        this.configuracionApiService = configuracionApiService;
+        this.numeracionControlService = numeracionControlService;
+        this.tipoMovimientoService = tipoMovimientoService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -165,25 +180,139 @@ public class SeguridadPortalController {
 
     @GetMapping("/configuracion")
     public String listConfigApi(Model model) {
+        model.addAttribute("configApiList", configuracionApiService.findAll());
         setPortalAttributes(model, "config-api");
         return "portal-seguridad/config-api";
     }
 
     @GetMapping("/numeracion")
     public String listNumeracion(Model model) {
+        model.addAttribute("numeraciones", numeracionControlService.findAll());
         setPortalAttributes(model, "numeracion");
         return "portal-seguridad/numeracion";
     }
 
+    @GetMapping("/numeracion/nuevo")
+    public String nuevaNumeracionForm(Model model) {
+        setPortalAttributes(model, "numeracion");
+        return "portal-seguridad/numeracion-form";
+    }
+
+    @GetMapping("/numeracion/{id}/editar")
+    public String editarNumeracionForm(@PathVariable Long id, Model model) {
+        model.addAttribute("numeracion", numeracionControlService.findById(id));
+        setPortalAttributes(model, "numeracion");
+        return "portal-seguridad/numeracion-form";
+    }
+
+    @PostMapping("/numeracion/nuevo")
+    @Transactional
+    public String createNumeracion(@RequestParam String entidad,
+                                    @RequestParam String serie,
+                                    @RequestParam int anio,
+                                    @RequestParam(defaultValue = "0") Long correlativoActual,
+                                    @RequestParam(required = false) String prefijo,
+                                    @RequestParam(defaultValue = "6") int longitudCorrelativo) {
+        NumeracionControl nc = new NumeracionControl();
+        nc.setEntidad(entidad);
+        nc.setSerie(serie);
+        nc.setAnio(anio);
+        nc.setCorrelativoActual(correlativoActual);
+        nc.setPrefijo(prefijo);
+        nc.setLongitudCorrelativo(longitudCorrelativo);
+        numeracionControlService.create(nc);
+        return "redirect:/seguridad/numeracion";
+    }
+
+    @PostMapping("/numeracion/{id}/toggle")
+    @Transactional
+    public String toggleNumeracion(@PathVariable Long id) {
+        numeracionControlService.toggleActivo(id);
+        return "redirect:/seguridad/numeracion";
+    }
+
     @GetMapping("/tipos-movimiento")
     public String listTiposMovimiento(Model model) {
+        model.addAttribute("tiposMovimiento", tipoMovimientoService.findAll());
         setPortalAttributes(model, "tipos-movimiento");
         return "portal-seguridad/tipos-movimiento";
+    }
+
+    @GetMapping("/tipos-movimiento/nuevo")
+    public String nuevoTipoMovimientoForm(Model model) {
+        setPortalAttributes(model, "tipos-movimiento");
+        return "portal-seguridad/tipo-movimiento-form";
+    }
+
+    @GetMapping("/tipos-movimiento/{id}/editar")
+    public String editarTipoMovimientoForm(@PathVariable Long id, Model model) {
+        model.addAttribute("tipoMovimiento", tipoMovimientoService.findById(id));
+        setPortalAttributes(model, "tipos-movimiento");
+        return "portal-seguridad/tipo-movimiento-form";
+    }
+
+    @PostMapping("/tipos-movimiento/nuevo")
+    @Transactional
+    public String createTipoMovimiento(@RequestParam String codigo,
+                                        @RequestParam String nombre,
+                                        @RequestParam String modulo,
+                                        @RequestParam(required = false) String descripcion) {
+        TipoMovimiento tm = new TipoMovimiento();
+        tm.setCodigo(codigo);
+        tm.setNombre(nombre);
+        tm.setModulo(modulo);
+        tm.setDescripcion(descripcion);
+        tipoMovimientoService.create(tm);
+        return "redirect:/seguridad/tipos-movimiento";
+    }
+
+    @PostMapping("/tipos-movimiento/{id}/toggle")
+    @Transactional
+    public String toggleTipoMovimiento(@PathVariable Long id) {
+        tipoMovimientoService.toggleActivo(id);
+        return "redirect:/seguridad/tipos-movimiento";
     }
 
     @GetMapping("/cambiar-contrasena")
     public String cambiarContrasena(Model model) {
         setPortalAttributes(model, "cambiar-contrasena");
         return "portal-seguridad/cambiar-contrasena";
+    }
+
+    @PostMapping("/cambiar-contrasena")
+    @Transactional
+    public String cambiarContrasenaSubmit(
+            @RequestParam("currentPassword") String currentPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            org.springframework.security.core.Authentication authentication,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes,
+            jakarta.servlet.http.HttpServletRequest request) {
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Las contraseñas no coinciden");
+            return "redirect:/seguridad/cambiar-contrasena";
+        }
+        if (newPassword.length() < 8) {
+            redirectAttributes.addFlashAttribute("error", "La contraseña debe tener al menos 8 caracteres");
+            return "redirect:/seguridad/cambiar-contrasena";
+        }
+        if (authentication == null || !(authentication.getPrincipal() instanceof com.clinica.seguridad.service.UsuarioPrincipal up)) {
+            return "redirect:/login";
+        }
+        Usuario usuario = up.getUsuario();
+        if (!passwordEncoder.matches(currentPassword, usuario.getPasswordHash())) {
+            redirectAttributes.addFlashAttribute("error", "La contraseña actual no es correcta");
+            return "redirect:/seguridad/cambiar-contrasena";
+        }
+        if (passwordEncoder.matches(newPassword, usuario.getPasswordHash())) {
+            redirectAttributes.addFlashAttribute("error", "La nueva contraseña no puede ser igual a la anterior");
+            return "redirect:/seguridad/cambiar-contrasena";
+        }
+        usuario.setPasswordHash(passwordEncoder.encode(newPassword));
+        usuario.setPasswordChangeRequired(false);
+        usuarioRepository.save(usuario);
+        request.getSession().invalidate();
+        redirectAttributes.addFlashAttribute("mensaje", "Contraseña cambiada correctamente. Inicie sesión con su nueva contraseña.");
+        return "redirect:/login";
     }
 }
