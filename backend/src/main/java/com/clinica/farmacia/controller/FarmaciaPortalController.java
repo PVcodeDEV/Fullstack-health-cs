@@ -20,6 +20,7 @@ public class FarmaciaPortalController {
         // Set portal fragments for green theme
         model.addAttribute("portalHeader", "portal-farmacia/fragments/header");
         model.addAttribute("portalSidebar", "portal-farmacia/fragments/sidebar");
+        model.addAttribute("activePage", "farmacia");
 
         return "portal-farmacia/dashboard";
     }
