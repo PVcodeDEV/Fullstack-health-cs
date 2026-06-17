@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{portal-asistencial/layouts/portal}">
+<head>
+    <title>Nueva Admisión - Portal Asistencial</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-8">
+        <a href="/asistencial/admisiones" class="text-sm text-blue-600 hover:text-blue-700 mb-2 inline-block">&larr; Volver a admisiones</a>
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]">Nueva Admisión</h1>
+    </div>
+
+    <!-- Progress -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-center justify-between px-4">
+            <div th:each="i : ${#numbers.sequence(1, 5)}" class="flex items-center flex-1">
+                <div class="flex flex-col items-center">
+                    <div th:text="${i}"
+                         class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+                         th:classappend="${i <= step} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'">1</div>
+                    <span class="text-xs mt-1 text-center"
+                          th:classappend="${i <= step} ? 'text-blue-600 font-medium' : 'text-gray-400'"
+                          th:text="${i == 1 ? 'Paciente' : i == 2 ? 'Paquete' : i == 3 ? 'Cama' : i == 4 ? 'Diag.' : 'Listo'}">Paso</span>
+                </div>
+                <div th:if="${i < 5}" class="flex-1 h-0.5 mx-2"
+                     th:classappend="${i < step} ? 'bg-blue-600' : 'bg-gray-200'"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 1: Search and Select Patient -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Buscar Paciente</h2>
+
+        <form th:action="@{/asistencial/admisiones/nueva}" method="get" class="flex gap-4 mb-6">
+            <input type="text" name="q" th:value="${searchQuery}"
+                   placeholder="Buscar por DNI, nombres o apellidos..."
+                   class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <button type="submit"
+                    class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                Buscar
+            </button>
+        </form>
+
+        <div th:if="${searchQuery != null and #lists.isEmpty(pacientes)}">
+            <p class="text-sm text-gray-500 py-4 text-center">No se encontraron pacientes con "<span th:text="${searchQuery}">criterio</span>"</p>
+        </div>
+        <div th:if="${#lists.isEmpty(pacientes) == false}" class="space-y-2">
+            <p class="text-sm text-gray-500 mb-3" th:text="${#lists.size(pacientes) + ' resultado(s)'}">3 resultados</p>
+            <form th:each="paciente : ${pacientes}"
+                  th:action="@{/asistencial/admisiones/wizard/paciente}"
+                  method="post"
+                  class="block">
+                <input type="hidden" name="pacienteId" th:value="${paciente.id}"/>
+                <button type="submit"
+                        class="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-800" th:text="${paciente.personaNombres + ' ' + paciente.personaApellidoPaterno}">Juan Pérez</p>
+                            <p class="text-xs text-gray-500" th:text="${paciente.personaNumeroDocumento}">12345678</p>
+                        </div>
+                        <span class="text-xs text-blue-600 font-medium">Seleccionar →</span>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
