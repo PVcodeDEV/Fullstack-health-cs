@@ -28,6 +28,7 @@ public class PortalAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     private static final Map<String, String> PORTAL_REDIRECTS = new LinkedHashMap<>();
 
     static {
+        PORTAL_REDIRECTS.put("seguridad:ver", "/seguridad");
         PORTAL_REDIRECTS.put("asistencial:ver", "/asistencial");
         PORTAL_REDIRECTS.put("farmacia:ver", "/farmacia");
         PORTAL_REDIRECTS.put("caja:ver", "/caja");
