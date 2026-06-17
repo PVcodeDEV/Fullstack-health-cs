@@ -60,11 +60,11 @@ Tracker: `feature/seguridad-portal-numeracion` (base: main).
 
 ## Fase 1d: Numeración + Tipos Movimiento + Config Templates (PR 1d)
 
-- [ ] 1d.1 Crear template: `config-api.html`
-- [ ] 1d.2 Crear templates: `numeracion.html`, `numeracion-form.html`
-- [ ] 1d.3 Crear templates: `tipos-movimiento.html`, `tipo-movimiento-form.html`
-- [ ] 1d.4 Crear template: `cambiar-contrasena.html` (o actualizar existente)
-- [ ] 1d.5 Test: compile + navegación CRUD
+- [x] 1d.1 Crear template: `config-api.html`
+- [x] 1d.2 Crear templates: `numeracion.html`, `numeracion-form.html`
+- [x] 1d.3 Crear templates: `tipos-movimiento.html`, `tipo-movimiento-form.html`
+- [x] 1d.4 Crear template: `cambiar-contrasena.html`
+- [x] 1d.5 Test: compile + navegación CRUD
 
 ## Fase 2: Migración Comprobante (PR 2)
 
