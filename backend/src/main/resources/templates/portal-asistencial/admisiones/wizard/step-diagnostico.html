@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{portal-asistencial/layouts/portal}">
+<head>
+    <title>Nueva Admisión - Portal Asistencial</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-8">
+        <a href="/asistencial/admisiones" class="text-sm text-blue-600 hover:text-blue-700 mb-2 inline-block">&larr; Volver a admisiones</a>
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]">Nueva Admisión</h1>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-center justify-between px-4">
+            <div th:each="i : ${#numbers.sequence(1, 5)}" class="flex items-center flex-1">
+                <div class="flex flex-col items-center">
+                    <div th:text="${i}" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+                         th:classappend="${i <= step} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'">1</div>
+                    <span class="text-xs mt-1 text-center"
+                          th:classappend="${i <= step} ? 'text-blue-600 font-medium' : 'text-gray-400'"
+                          th:text="${i == 1 ? 'Paciente' : i == 2 ? 'Paquete' : i == 3 ? 'Cama' : i == 4 ? 'Diag.' : 'Listo'}">Paso</span>
+                </div>
+                <div th:if="${i < 5}" class="flex-1 h-0.5 mx-2"
+                     th:classappend="${i < step} ? 'bg-blue-600' : 'bg-gray-200'"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-2xl">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Registrar Diagnóstico</h2>
+        <p class="text-sm text-gray-500 mb-6">Ingrese el diagnóstico de ingreso para la cuenta #<span th:text="${cuentaId}">123</span></p>
+
+        <form th:action="@{/asistencial/admisiones/wizard/diagnostico}" method="post" class="space-y-4">
+            <div>
+                <label for="codigoCIE11" class="block text-sm font-medium text-gray-700 mb-1">Código CIE-11 <span class="text-red-500">*</span></label>
+                <input type="text" name="codigoCIE11" id="codigoCIE11" required placeholder="Ej: 1A00.ZZ"
+                       class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            </div>
+            <div>
+                <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-1">Descripción <span class="text-red-500">*</span></label>
+                <textarea name="descripcion" id="descripcion" rows="3" required placeholder="Describa el diagnóstico de ingreso..."
+                          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
+            </div>
+            <div>
+                <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo <span class="text-red-500">*</span></label>
+                <select name="tipo" id="tipo"
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <option value="PRINCIPAL">Principal</option>
+                    <option value="SECUNDARIO">Secundario</option>
+                    <option value="COMPLICACION">Complicación</option>
+                </select>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                <a href="/asistencial/admisiones" class="text-sm text-gray-500 hover:text-gray-700 underline underline-offset-2">Cancelar</a>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">Completar Admisión</button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{portal-asistencial/layouts/portal}">
+<head>
+    <title>Nueva Admisión - Portal Asistencial</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-8">
+        <a href="/asistencial/admisiones" class="text-sm text-blue-600 hover:text-blue-700 mb-2 inline-block">&larr; Volver a admisiones</a>
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]">Nueva Admisión</h1>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-center justify-between px-4">
+            <div th:each="i : ${#numbers.sequence(1, 5)}" class="flex items-center flex-1">
+                <div class="flex flex-col items-center">
+                    <div th:text="${i}" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+                         th:classappend="${i <= step} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'">1</div>
+                    <span class="text-xs mt-1 text-center"
+                          th:classappend="${i <= step} ? 'text-blue-600 font-medium' : 'text-gray-400'"
+                          th:text="${i == 1 ? 'Paciente' : i == 2 ? 'Paquete' : i == 3 ? 'Cama' : i == 4 ? 'Diag.' : 'Listo'}">Paso</span>
+                </div>
+                <div th:if="${i < 5}" class="flex-1 h-0.5 mx-2"
+                     th:classappend="${i < step} ? 'bg-blue-600' : 'bg-gray-200'"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Seleccionar Paquete Quirúrgico</h2>
+        <p class="text-sm text-gray-500 mb-6">Seleccione el paquete quirúrgico para la admisión</p>
+
+        <div th:if="${#lists.isEmpty(paquetes)}">
+            <p class="text-sm text-gray-500 py-4 text-center">No hay paquetes disponibles</p>
+        </div>
+        <div th:unless="${#lists.isEmpty(paquetes)}" class="space-y-3">
+            <form th:each="paquete : ${paquetes}"
+                  th:action="@{/asistencial/admisiones/wizard/paquete}" method="post" class="block">
+                <input type="hidden" name="paqueteId" th:value="${paquete.id}"/>
+                <button type="submit" class="w-full text-left px-4 py-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-800" th:text="|Paquete #${paquete.paqueteQuirurgicoId}|">Paquete #1</p>
+                            <p class="text-xs text-gray-500 mt-1" th:text="|${paquete.diasIncluidos} día(s) incluido(s)|">1 día</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
