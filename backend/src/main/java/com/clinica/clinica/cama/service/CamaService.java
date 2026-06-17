@@ -53,6 +53,13 @@ public class CamaService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<CamaResponse> findDisponiblesByTipoHabitacion(Long tipoHabitacionId) {
+        return repository.findByTipoHabitacionAndDisponible(tipoHabitacionId).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     public CamaResponse create(CamaRequest request) {
         Cama entity = new Cama();
         entity.setHabitacionId(request.habitacionId());
