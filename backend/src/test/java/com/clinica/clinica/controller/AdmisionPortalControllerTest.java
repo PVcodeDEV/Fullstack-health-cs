@@ -1,8 +1,13 @@
 package com.clinica.clinica.controller;
 
 import com.clinica.clinica.admision.entity.SolicitudHospitalizacion;
+import com.clinica.clinica.admision.repository.CuentaRepository;
 import com.clinica.clinica.admision.repository.SolicitudHospitalizacionRepository;
+import com.clinica.clinica.admision.service.AdmisionService;
+import com.clinica.clinica.cama.service.CamaService;
+import com.clinica.clinica.paciente.service.PacienteService;
 import com.clinica.config.GlobalExceptionHandler;
+import com.clinica.persona.entity.Persona;
 import com.clinica.rrhh.TestMethodSecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +31,18 @@ class AdmisionPortalControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private AdmisionService admisionService;
+
+    @MockitoBean
+    private PacienteService pacienteService;
+
+    @MockitoBean
+    private CamaService camaService;
+
+    @MockitoBean
+    private CuentaRepository cuentaRepository;
 
     @MockitoBean
     private SolicitudHospitalizacionRepository solicitudRepository;
@@ -73,5 +90,20 @@ class AdmisionPortalControllerTest {
         mockMvc.perform(get("/asistencial/admisiones"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("alertas", List.of()));
+    }
+
+    @Test
+    void nueva_ShouldReturn200() throws Exception {
+        mockMvc.perform(get("/asistencial/admisiones/nueva"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("portal-asistencial/admisiones/nueva"))
+                .andExpect(model().attribute("step", 1));
+    }
+
+    @Test
+    void nueva_WithSearchQuery_ShouldReturn200() throws Exception {
+        mockMvc.perform(get("/asistencial/admisiones/nueva").param("q", "12345678"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("searchQuery", "12345678"));
     }
 }
