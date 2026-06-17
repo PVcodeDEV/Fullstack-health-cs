@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{portal-asistencial/layouts/portal}">
+<head>
+    <title>Nueva Admisión - Portal Asistencial</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-8">
+        <a href="/asistencial/admisiones" class="text-sm text-blue-600 hover:text-blue-700 mb-2 inline-block">&larr; Volver a admisiones</a>
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]">Nueva Admisión</h1>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-center justify-between px-4">
+            <div th:each="i : ${#numbers.sequence(1, 5)}" class="flex items-center flex-1">
+                <div class="flex flex-col items-center">
+                    <div th:text="${i}" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+                         th:classappend="${i <= step} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'">1</div>
+                    <span class="text-xs mt-1 text-center"
+                          th:classappend="${i <= step} ? 'text-blue-600 font-medium' : 'text-gray-400'"
+                          th:text="${i == 1 ? 'Paciente' : i == 2 ? 'Paquete' : i == 3 ? 'Cama' : i == 4 ? 'Diag.' : 'Listo'}">Paso</span>
+                </div>
+                <div th:if="${i < 5}" class="flex-1 h-0.5 mx-2"
+                     th:classappend="${i < step} ? 'bg-blue-600' : 'bg-gray-200'"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">Asignar Cama</h2>
+        <p class="text-sm text-gray-500 mb-2">Seleccione una cama disponible o continúe sin asignación.</p>
+        <p class="text-xs text-amber-600 mb-6 bg-amber-50 px-3 py-2 rounded-lg">
+            ⚠️ Si no asigna una cama ahora, la solicitud quedará como <strong>PENDIENTE</strong> y recibirá una alerta si no se asigna en 2 horas.
+        </p>
+
+        <div th:if="${#lists.isEmpty(camas)}">
+            <p class="text-sm text-gray-500 py-4 text-center">No hay camas disponibles para este tipo de habitación.</p>
+            <form th:action="@{/asistencial/admisiones/wizard/cama}" method="post" class="text-center mt-4">
+                <input type="hidden" name="camaId" value="">
+                <button type="submit" class="px-6 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition-colors">Continuar sin cama</button>
+            </form>
+        </div>
+        <div th:unless="${#lists.isEmpty(camas)}" class="space-y-3">
+            <form th:each="cama : ${camas}" th:action="@{/asistencial/admisiones/wizard/cama}" method="post" class="block">
+                <input type="hidden" name="camaId" th:value="${cama.id}"/>
+                <button type="submit" class="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-800" th:text="|Cama ${cama.numero}|">Cama 101</p>
+                            <p class="text-xs text-gray-500" th:text="|${cama.habitacionNombres}|">Habitación A</p>
+                        </div>
+                        <span class="text-xs text-blue-600 font-medium">Asignar →</span>
+                    </div>
+                </button>
+            </form>
+            <div class="border-t border-gray-100 pt-3 mt-3 text-center">
+                <form th:action="@{/asistencial/admisiones/wizard/cama}" method="post" class="inline">
+                    <input type="hidden" name="camaId" value="">
+                    <button type="submit" class="text-sm text-gray-500 hover:text-gray-700 underline underline-offset-2">Omitir asignación de cama</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
