@@ -18,6 +18,7 @@ import com.clinica.maestro.entity.financiero.TipoComprobante;
 import com.clinica.maestro.repository.financiero.TipoComprobanteRepository;
 import com.clinica.persona.entity.Persona;
 import com.clinica.persona.repository.PersonaRepository;
+import com.clinica.seguridad.service.NumeracionControlService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,6 @@ public class ComprobanteService {
     private static final Logger log = LoggerFactory.getLogger(ComprobanteService.class);
     private static final BigDecimal IGV_RATE = new BigDecimal("0.18");
     private static final String SERIE_CAJA = "001";
-    private static final int CORRELATIVO_PADDING = 8;
 
     private final ComprobanteRepository comprobanteRepository;
     private final ReprintLogRepository reprintLogRepository;
@@ -49,6 +49,7 @@ public class ComprobanteService {
     private final EmpresaRepository empresaRepository;
     private final CuentaService cuentaService;
     private final SunatXmlGenerator xmlGenerator;
+    private final NumeracionControlService numeracionControlService;
 
     public ComprobanteService(ComprobanteRepository comprobanteRepository,
                               ReprintLogRepository reprintLogRepository,
@@ -56,7 +57,8 @@ public class ComprobanteService {
                               PersonaRepository personaRepository,
                               EmpresaRepository empresaRepository,
                               CuentaService cuentaService,
-                              SunatXmlGenerator xmlGenerator) {
+                              SunatXmlGenerator xmlGenerator,
+                              NumeracionControlService numeracionControlService) {
         this.comprobanteRepository = comprobanteRepository;
         this.reprintLogRepository = reprintLogRepository;
         this.tipoComprobanteRepository = tipoComprobanteRepository;
@@ -64,6 +66,7 @@ public class ComprobanteService {
         this.empresaRepository = empresaRepository;
         this.cuentaService = cuentaService;
         this.xmlGenerator = xmlGenerator;
+        this.numeracionControlService = numeracionControlService;
     }
 
     /**
@@ -174,8 +177,8 @@ public class ComprobanteService {
         BigDecimal subtotal = total.divide(BigDecimal.ONE.add(IGV_RATE), 2, RoundingMode.HALF_UP);
         BigDecimal igv = total.subtract(subtotal);
 
-        // Auto-increment correlativo for series 001
-        String correlativo = nextCorrelativo(serie);
+         // Auto-increment correlativo for series 001 using centralized numeration
+         String correlativo = numeracionControlService.nextCorrelativo("COMPROBANTE", serie);
 
         // Build entity
         Comprobante entity = new Comprobante();
@@ -256,8 +259,8 @@ public class ComprobanteService {
         BigDecimal subtotalNC = totalNC.divide(BigDecimal.ONE.add(IGV_RATE), 2, RoundingMode.HALF_UP);
         BigDecimal igvNC = totalNC.subtract(subtotalNC);
 
-        // Auto-increment correlativo
-        String correlativo = nextCorrelativo(original.getSerie());
+         // Auto-increment correlativo using centralized numeration
+         String correlativo = numeracionControlService.nextCorrelativo("COMPROBANTE", original.getSerie());
 
         // Determine if this is a full cancellation
         boolean fullCancellation = request.monto().compareTo(original.getTotal()) == 0;
@@ -400,23 +403,6 @@ public class ComprobanteService {
     }
 
     // --- Private helpers ---
-
-    /**
-     * Auto-increment correlativo within a series.
-     * Finds the max correlativo, increments by 1, and zero-pads to 8 digits.
-     */
-    private String nextCorrelativo(String serie) {
-        String maxCorrelativo = comprobanteRepository.findMaxCorrelativoBySerie(serie).orElse(null);
-        int nextNum = 1;
-        if (maxCorrelativo != null) {
-            try {
-                nextNum = Integer.parseInt(maxCorrelativo) + 1;
-            } catch (NumberFormatException e) {
-                log.warn("Could not parse correlativo '{}', starting from 1", maxCorrelativo);
-            }
-        }
-        return String.format("%0" + CORRELATIVO_PADDING + "d", nextNum);
-    }
 
     /**
      * Build full name from Persona fields.
