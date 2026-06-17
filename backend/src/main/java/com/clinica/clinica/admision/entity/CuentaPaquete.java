@@ -37,6 +37,12 @@ public class CuentaPaquete extends BaseEntity {
     @Column(name = "cup_paquete_quirurgico_id", nullable = false)
     private Long paqueteQuirurgicoId;
 
+    @Column(name = "cup_tipo_habitacion_id")
+    private Long tipoHabitacionId;
+
+    @Column(name = "cup_dias_incluidos")
+    private Integer diasIncluidos = 1;
+
     @Column(name = "cup_fecha_registro", nullable = false)
     private LocalDateTime fechaRegistro;
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -41,6 +42,12 @@ public class PacienteService {
         return pacienteRepository.findById(id)
             .map(PacienteResponse::fromEntity)
             .orElseThrow(() -> new EntityNotFoundException("Paciente not found with id: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<PacienteResponse> findByPersonaId(Long personaId) {
+        return pacienteRepository.findByPersonaId(personaId)
+            .map(PacienteResponse::fromEntity);
     }
 
     public PacienteResponse create(PacienteRequest request) {
