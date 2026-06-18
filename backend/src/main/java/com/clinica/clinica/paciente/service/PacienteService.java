@@ -6,6 +6,7 @@ import com.clinica.clinica.paciente.entity.Paciente;
 import com.clinica.clinica.paciente.repository.PacienteRepository;
 import com.clinica.persona.entity.Persona;
 import com.clinica.persona.repository.PersonaRepository;
+import com.clinica.seguridad.service.NumeracionControlService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +24,14 @@ public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
     private final PersonaRepository personaRepository;
+    private final NumeracionControlService numeracionControlService;
 
-    public PacienteService(PacienteRepository pacienteRepository, PersonaRepository personaRepository) {
+    public PacienteService(PacienteRepository pacienteRepository,
+                           PersonaRepository personaRepository,
+                           NumeracionControlService numeracionControlService) {
         this.pacienteRepository = pacienteRepository;
         this.personaRepository = personaRepository;
+        this.numeracionControlService = numeracionControlService;
     }
 
     @Transactional(readOnly = true)
@@ -62,10 +67,17 @@ public class PacienteService {
             .orElseThrow(() -> new EntityNotFoundException(
                 "Persona not found with id: " + request.personaId()));
 
+        // Auto-generate nroHistoriaClinica if not provided
+        String nroHistoriaClinica = request.nroHistoriaClinica();
+        if (nroHistoriaClinica == null || nroHistoriaClinica.isBlank()) {
+            nroHistoriaClinica = numeracionControlService.nextCorrelativo("HC", "001");
+            log.debug("Auto-generated nroHistoriaClinica: {}", nroHistoriaClinica);
+        }
+
         var entity = new Paciente();
         entity.setPersona(persona);
         entity.setTipoPaciente(request.tipoPaciente());
-        entity.setNroHistoriaClinica(request.nroHistoriaClinica());
+        entity.setNroHistoriaClinica(nroHistoriaClinica);
         entity.setGrupoSanguineo(request.grupoSanguineo());
         entity.setAlergias(request.alergias());
         entity.setContactoEmergenciaNombre(request.contactoEmergenciaNombre());
