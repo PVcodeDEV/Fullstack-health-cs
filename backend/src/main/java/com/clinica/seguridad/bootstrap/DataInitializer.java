@@ -11,9 +11,13 @@ import com.clinica.seguridad.entity.RolPermisoId;
 import com.clinica.seguridad.entity.Usuario;
 import com.clinica.seguridad.entity.UsuarioRol;
 import com.clinica.seguridad.entity.UsuarioRolId;
+import com.clinica.seguridad.entity.NumeracionControl;
+import com.clinica.seguridad.entity.TipoMovimiento;
+import com.clinica.seguridad.repository.NumeracionControlRepository;
 import com.clinica.seguridad.repository.PermisoRepository;
 import com.clinica.seguridad.repository.RolPermisoRepository;
 import com.clinica.seguridad.repository.RolRepository;
+import com.clinica.seguridad.repository.TipoMovimientoRepository;
 import com.clinica.seguridad.repository.UsuarioRepository;
 import com.clinica.seguridad.repository.UsuarioRolRepository;
 import org.slf4j.Logger;
@@ -42,6 +46,8 @@ public class DataInitializer implements ApplicationRunner {
     private final UsuarioRolRepository usuarioRolRepository;
     private final PersonaRepository personaRepository;
     private final TipoDocumentoIdentidadRepository tipoDocumentoIdentidadRepository;
+    private final TipoMovimientoRepository tipoMovimientoRepository;
+    private final NumeracionControlRepository numeracionControlRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.data-initializer.enabled:true}")
@@ -60,6 +66,8 @@ public class DataInitializer implements ApplicationRunner {
                            UsuarioRolRepository usuarioRolRepository,
                            PersonaRepository personaRepository,
                            TipoDocumentoIdentidadRepository tipoDocumentoIdentidadRepository,
+                           TipoMovimientoRepository tipoMovimientoRepository,
+                           NumeracionControlRepository numeracionControlRepository,
                            PasswordEncoder passwordEncoder) {
         this.rolRepository = rolRepository;
         this.permisoRepository = permisoRepository;
@@ -68,6 +76,8 @@ public class DataInitializer implements ApplicationRunner {
         this.usuarioRolRepository = usuarioRolRepository;
         this.personaRepository = personaRepository;
         this.tipoDocumentoIdentidadRepository = tipoDocumentoIdentidadRepository;
+        this.tipoMovimientoRepository = tipoMovimientoRepository;
+        this.numeracionControlRepository = numeracionControlRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -94,19 +104,25 @@ public class DataInitializer implements ApplicationRunner {
         // 3. Assign all permisos to ADMIN role
         assignAllPermisosToAdmin();
 
-        // 4. Assign caja and entidad permisos to CAJA role
+        // 4. Seed tipos de movimiento
+        seedTipoMovimientos();
+
+        // 5. Seed numeración control
+        seedNumeracionControl();
+
+        // 6. Assign caja and entidad permisos to CAJA role
         assignCajaPermisos();
 
-        // 5. Assign GERENCIA permisos
+        // 7. Assign GERENCIA permisos
         assignGerenciaPermisos();
 
-        // 6. Assign RECEPCION permisos
+        // 8. Assign RECEPCION permisos
         assignRecepcionPermisos();
 
-        // 7. Assign MEDICO permisos
+        // 9. Assign MEDICO permisos
         assignMedicoPermisos();
 
-        // 8. Create bootstrap admin user if env vars are set
+        // 10. Create bootstrap admin user if env vars are set
         seedAdminUser();
     }
 
@@ -228,7 +244,23 @@ public class DataInitializer implements ApplicationRunner {
             new SeedPermiso("farmacia:ver", "Acceder al Portal Farmacia", "portal",
                 "Acceso al módulo Farmacia (despacho, stock)"),
             new SeedPermiso("administrativo:ver", "Acceder al Portal Administrativo", "portal",
-                "Acceso al módulo Administrativo (RRHH, maestros, usuarios)")
+                "Acceso al módulo Administrativo (RRHH, maestros, usuarios)"),
+
+            // Portal Seguridad
+            new SeedPermiso("seguridad:ver", "Acceder al Portal Seguridad", "seguridad",
+                "Acceso al módulo Seguridad (usuarios, roles, permisos)"),
+
+            // Numeración control
+            new SeedPermiso("numeracion:ver", "Ver numeración correlativa", "numeracion",
+                "Visualización de entradas de numeración correlativa"),
+            new SeedPermiso("numeracion:editar", "Editar numeración correlativa", "numeracion",
+                "Creación y edición de entradas de numeración correlativa"),
+
+            // Tipo movimiento
+            new SeedPermiso("tipo-movimiento:ver", "Ver tipos de movimiento", "tipo-movimiento",
+                "Visualización de tipos de movimiento"),
+            new SeedPermiso("tipo-movimiento:editar", "Editar tipos de movimiento", "tipo-movimiento",
+                "Creación y edición de tipos de movimiento")
         );
 
         for (SeedPermiso sp : permisos) {
@@ -243,6 +275,64 @@ public class DataInitializer implements ApplicationRunner {
             }
         }
         log.info("Permisos seeded successfully");
+    }
+
+    private void seedTipoMovimientos() {
+        List<SeedTipoMovimiento> tipos = List.of(
+            new SeedTipoMovimiento("ENTRADA", "Entrada", "FARMACIA",
+                "Entrada de productos al almacén"),
+            new SeedTipoMovimiento("SALIDA", "Salida", "FARMACIA",
+                "Salida de productos del almacén"),
+            new SeedTipoMovimiento("AJUSTE", "Ajuste", "FARMACIA",
+                "Ajuste de inventario por diferencias"),
+            new SeedTipoMovimiento("TRANSFERENCIA", "Transferencia", "FARMACIA",
+                "Transferencia entre almacenes"),
+            new SeedTipoMovimiento("DEVOLUCION", "Devolución", "FARMACIA",
+                "Devolución de productos")
+        );
+
+        int seeded = 0;
+        for (SeedTipoMovimiento stm : tipos) {
+            if (tipoMovimientoRepository.findByCodigo(stm.codigo()).isEmpty()) {
+                TipoMovimiento entity = new TipoMovimiento();
+                entity.setCodigo(stm.codigo());
+                entity.setNombre(stm.nombre());
+                entity.setModulo(stm.modulo());
+                entity.setDescripcion(stm.descripcion());
+                tipoMovimientoRepository.save(entity);
+                seeded++;
+                log.debug("TipoMovimiento seeded: {}", stm.codigo());
+            }
+        }
+        log.info("TipoMovimientos seeded: {} nuevos", seeded);
+    }
+
+    private void seedNumeracionControl() {
+        int anio = java.time.Year.now().getValue();
+
+        List<SeedNumeracion> entries = List.of(
+            new SeedNumeracion("COMPROBANTE", "001", null, 6, anio),
+            new SeedNumeracion("VENTA", "001", null, 6, anio),
+            new SeedNumeracion("HC", "001", "HC-", 6, anio)
+        );
+
+        int seeded = 0;
+        for (SeedNumeracion sn : entries) {
+            if (!numeracionControlRepository.existsByEntidadAndSerieAndAnio(
+                    sn.entidad(), sn.serie(), sn.anio())) {
+                NumeracionControl entity = new NumeracionControl();
+                entity.setEntidad(sn.entidad());
+                entity.setSerie(sn.serie());
+                entity.setCorrelativoActual(0L);
+                entity.setPrefijo(sn.prefijo());
+                entity.setLongitudCorrelativo(sn.longitud());
+                entity.setAnio(sn.anio());
+                numeracionControlRepository.save(entity);
+                seeded++;
+                log.debug("NumeracionControl seeded: {}/{}/{}", sn.entidad(), sn.serie(), sn.anio());
+            }
+        }
+        log.info("NumeracionControl seeded: {} nuevos", seeded);
     }
 
     private void assignAllPermisosToAdmin() {
@@ -415,4 +505,6 @@ public class DataInitializer implements ApplicationRunner {
 
     private record SeedRole(String codigo, String nombre, String descripcion) {}
     private record SeedPermiso(String codigo, String nombre, String modulo, String descripcion) {}
+    private record SeedTipoMovimiento(String codigo, String nombre, String modulo, String descripcion) {}
+    private record SeedNumeracion(String entidad, String serie, String prefijo, int longitud, int anio) {}
 }
