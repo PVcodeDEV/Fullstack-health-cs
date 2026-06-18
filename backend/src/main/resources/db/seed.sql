@@ -86,7 +86,8 @@ INSERT INTO tb_permisos (per_codigo, per_nombre, per_modulo, per_descripcion, pe
     -- Portal access
     ('asistencial:ver',   'Acceder al Portal Asistencial',     'portal',        'Acceso al módulo Asistencial (pacientes, admisiones, HCE)', NOW(), true),
     ('farmacia:ver',      'Acceder al Portal Farmacia',        'portal',        'Acceso al módulo Farmacia (despacho, stock)',               NOW(), true),
-    ('administrativo:ver','Acceder al Portal Administrativo',  'portal',        'Acceso al módulo Administrativo (RRHH, maestros, usuarios)',NOW(), true)
+    ('administrativo:ver','Acceder al Portal Administrativo',  'portal',        'Acceso al módulo Administrativo (RRHH, maestros, usuarios)',NOW(), true),
+    ('seguridad:ver',     'Acceder al módulo Seguridad',       'portal',        'Acceso al módulo Seguridad (usuarios, roles, permisos)',    NOW(), true)
 
 ON CONFLICT (per_codigo) DO NOTHING;
 
@@ -164,25 +165,58 @@ AND NOT EXISTS (
     WHERE rp.rop_rol_id = r.rol_id AND rp.rop_permiso_id = p.per_id
 );
 
--- 5.4 RECEPCION → read entities, read caja, read cuenta, admision
+-- 5.4 RECEPCION → read entities, read caja, read cuenta, admision + portal asistencial
 INSERT INTO tb_roles_permisos (rop_rol_id, rop_permiso_id)
 SELECT r.rol_id, p.per_id
 FROM tb_roles r, tb_permisos p
 WHERE r.rol_codigo = 'RECEPCION'
-AND p.per_codigo IN ('entidad:ver','caja:ver','cuenta:ver',
+AND p.per_codigo IN ('asistencial:ver','entidad:ver','caja:ver','cuenta:ver',
                      'admision:ver','admision:editar')
 AND NOT EXISTS (
     SELECT 1 FROM tb_roles_permisos rp
     WHERE rp.rop_rol_id = r.rol_id AND rp.rop_permiso_id = p.per_id
 );
 
--- 5.5 MEDICO → clinical read, caja ver (pre-liquidación)
+-- 5.5 MEDICO → clinical read, caja ver (pre-liquidación) + portal asistencial
 INSERT INTO tb_roles_permisos (rop_rol_id, rop_permiso_id)
 SELECT r.rol_id, p.per_id
 FROM tb_roles r, tb_permisos p
 WHERE r.rol_codigo = 'MEDICO'
-AND p.per_codigo IN ('caja:ver','cuenta:ver','admision:ver',
+AND p.per_codigo IN ('asistencial:ver','caja:ver','cuenta:ver','admision:ver',
                      'hospitalizacion:ver','sop:ver','hce:ver','hce:editar')
+AND NOT EXISTS (
+    SELECT 1 FROM tb_roles_permisos rp
+    WHERE rp.rop_rol_id = r.rol_id AND rp.rop_permiso_id = p.per_id
+);
+
+-- 5.6 FARMACIA → farmacia permissions + portal farmacia
+INSERT INTO tb_roles_permisos (rop_rol_id, rop_permiso_id)
+SELECT r.rol_id, p.per_id
+FROM tb_roles r, tb_permisos p
+WHERE r.rol_codigo = 'FARMACIA'
+AND p.per_codigo IN ('farmacia:ver')
+AND NOT EXISTS (
+    SELECT 1 FROM tb_roles_permisos rp
+    WHERE rp.rop_rol_id = r.rol_id AND rp.rop_permiso_id = p.per_id
+);
+
+-- 5.7 ENFERMERIA → portal asistencial
+INSERT INTO tb_roles_permisos (rop_rol_id, rop_permiso_id)
+SELECT r.rol_id, p.per_id
+FROM tb_roles r, tb_permisos p
+WHERE r.rol_codigo = 'ENFERMERIA'
+AND p.per_codigo IN ('asistencial:ver')
+AND NOT EXISTS (
+    SELECT 1 FROM tb_roles_permisos rp
+    WHERE rp.rop_rol_id = r.rol_id AND rp.rop_permiso_id = p.per_id
+);
+
+-- 5.8 CONTABILIDAD → portal administrativo
+INSERT INTO tb_roles_permisos (rop_rol_id, rop_permiso_id)
+SELECT r.rol_id, p.per_id
+FROM tb_roles r, tb_permisos p
+WHERE r.rol_codigo = 'CONTABILIDAD'
+AND p.per_codigo IN ('administrativo:ver')
 AND NOT EXISTS (
     SELECT 1 FROM tb_roles_permisos rp
     WHERE rp.rop_rol_id = r.rol_id AND rp.rop_permiso_id = p.per_id

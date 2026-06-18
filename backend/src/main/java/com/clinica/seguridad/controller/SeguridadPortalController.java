@@ -79,8 +79,8 @@ public class SeguridadPortalController {
     }
 
     private void setPortalAttributes(Model model, String activePage) {
-        model.addAttribute("portalHeader", "portal-seguridad/fragments/header");
-        model.addAttribute("portalSidebar", "portal-seguridad/fragments/sidebar");
+        model.addAttribute("portalHeader", "portal-administrativo/fragments/header");
+        model.addAttribute("portalSidebar", "portal-administrativo/fragments/sidebar");
         model.addAttribute("activePage", activePage);
     }
 
@@ -95,6 +95,7 @@ public class SeguridadPortalController {
     }
 
     @GetMapping("/usuarios")
+    @Transactional(readOnly = true)
     public String listUsuarios(Model model) {
         List<UsuarioResponse> usuarios = usuarioRepository.findAll().stream()
                 .map(u -> {
@@ -113,6 +114,23 @@ public class SeguridadPortalController {
     public String nuevoUsuarioForm(Model model) {
         model.addAttribute("allRoles", rolRepository.findAll());
         model.addAttribute("allPersonas", personaRepository.findAll());
+        setPortalAttributes(model, "usuarios");
+        return "portal-seguridad/usuario-form";
+    }
+
+    @GetMapping("/usuarios/{id}/editar")
+    @Transactional(readOnly = true)
+    public String editarUsuarioForm(@PathVariable Long id, Model model) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con id: " + id));
+        List<Long> usuarioRolIds = usuarioRolRepository.findByUsuarioId(id).stream()
+                .map(ur -> ur.getRol().getId())
+                .toList();
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("usuarioRolIds", usuarioRolIds);
+        model.addAttribute("allRoles", rolRepository.findAll());
+        model.addAttribute("allPersonas", personaRepository.findAll());
+        model.addAttribute("editMode", true);
         setPortalAttributes(model, "usuarios");
         return "portal-seguridad/usuario-form";
     }
@@ -137,6 +155,39 @@ public class SeguridadPortalController {
                 Rol rol = rolRepository.findById(rolId)
                         .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado con id: " + rolId));
                 UsuarioRol ur = new UsuarioRol(new UsuarioRolId(usuario.getId(), rolId), usuario, rol);
+                usuarioRolRepository.save(ur);
+            }
+        }
+
+        return "redirect:/seguridad/usuarios";
+    }
+
+    @PostMapping("/usuarios/{id}/editar")
+    @Transactional
+    public String updateUsuario(@PathVariable Long id,
+                                 @RequestParam String username,
+                                 @RequestParam(required = false) String password,
+                                 @RequestParam Long personaId,
+                                 @RequestParam(required = false) List<Long> rolIds) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con id: " + id));
+        Persona persona = personaRepository.findById(personaId)
+                .orElseThrow(() -> new EntityNotFoundException("Persona no encontrada con id: " + personaId));
+
+        usuario.setUsername(username);
+        if (password != null && !password.isBlank()) {
+            usuario.setPasswordHash(passwordEncoder.encode(password));
+        }
+        usuario.setPersona(persona);
+        usuarioRepository.save(usuario);
+
+        // Reemplazar roles: eliminar existentes, asignar nuevos
+        usuarioRolRepository.deleteAll(usuarioRolRepository.findByUsuarioId(id));
+        if (rolIds != null) {
+            for (Long rolId : rolIds) {
+                Rol rol = rolRepository.findById(rolId)
+                        .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado con id: " + rolId));
+                UsuarioRol ur = new UsuarioRol(new UsuarioRolId(id, rolId), usuario, rol);
                 usuarioRolRepository.save(ur);
             }
         }

@@ -58,16 +58,36 @@ Browser HTTP sessions MUST expire after 30 minutes of inactivity. On expiration,
 - WHEN no request is made for 30+ minutes
 - THEN the next request redirects to `/login`
 
-### Requirement: R-005 — JWT env var configuration
+### Requirement: R-005 — Usuarios vinculados a Trabajadores (regla de dominio)
+
+El sistema DEBE exigir que todo usuario (excepto el administrador de bootstrap) esté vinculado a un trabajador activo registrado en el módulo RRHH. La entidad `tb_usuarios.usu_trabajador_id` referencia a `tb_trabajadores`.
+
+- El administrador del sistema (usuario de bootstrap, DNI: 72852927) es la ÚNICA excepción — puede existir sin trabajador asociado para permitir la configuración inicial del sistema.
+- Todo usuario creado posteriormente DEBE seleccionar o crear un trabajador existente.
+- La creación de un usuario desde el portal de seguridad debe ofrecer la opción de crear un trabajador sobre la marcha si la persona no es aún trabajador.
+
+#### Scenario: SC-005-1 — Admin sin trabajador
+- GIVEN la base de datos recién creada sin trabajadores
+- WHEN se ejecuta el seed.sql
+- THEN el usuario admin (72852927) se crea con `usu_trabajador_id = NULL`
+- AND el sistema permite el login del admin sin trabajador asociado
+
+#### Scenario: SC-005-2 — Nuevo usuario requiere trabajador
+- GIVEN un usuario admin autenticado
+- WHEN se crea un nuevo usuario desde el portal
+- THEN el formulario requiere seleccionar una persona que YA sea trabajador
+- OR permite crear un trabajador para la persona seleccionada
+
+### Requirement: R-006 — JWT env var configuration
 
 JWT secret and expiration MUST be configurable via env vars: `JWT_SECRET` (HMAC key, min 256-bit) and `JWT_EXPIRATION` (seconds, default 3600). Missing `JWT_SECRET` MUST fail on startup.
 
-#### Scenario: SC-005-1 — Default expiration
+#### Scenario: SC-006-1 — Default expiration
 - GIVEN `JWT_EXPIRATION` is not set
 - WHEN a JWT is issued
 - THEN `exp` claim is 3600 seconds from issuance
 
-#### Scenario: SC-005-2 — Missing secret fails startup
+#### Scenario: SC-006-2 — Missing secret fails startup
 - GIVEN `JWT_SECRET` is not set and no dev fallback configured
 - WHEN the application starts
 - THEN startup fails with a descriptive error

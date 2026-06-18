@@ -2,31 +2,36 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{portal-seguridad/layouts/portal}">
+      layout:decorate="~{portal-administrativo/layouts/portal}">
 <head>
-    <title>Nuevo Usuario - Seguridad</title>
+    <title th:text="${editMode} ? 'Editar Usuario - Seguridad' : 'Nuevo Usuario - Seguridad'">Usuario - Seguridad</title>
 </head>
 <body>
 <main layout:fragment="content">
     <div class="mb-8">
-        <h1 class="text-2xl font-bold text-[var(--portal-text)]">Nuevo Usuario</h1>
-        <p class="text-gray-500 mt-1">Complete los campos para crear un nuevo usuario</p>
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]" th:text="${editMode} ? 'Editar Usuario' : 'Nuevo Usuario'">Usuario</h1>
+        <p class="text-gray-500 mt-1" th:text="${editMode} ? 'Modifique los datos del usuario' : 'Complete los campos para crear un nuevo usuario'">Descripci&oacute;n</p>
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-2xl">
-        <form th:action="@{/seguridad/usuarios/nuevo}" method="post" class="space-y-6">
+        <form th:action="${editMode} ? @{/seguridad/usuarios/{id}/editar(id=${usuario.id})} : @{/seguridad/usuarios/nuevo}"
+              method="post" class="space-y-6">
             <!-- Username -->
             <div>
                 <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nombre de Usuario</label>
                 <input type="text" id="username" name="username" required maxlength="50"
+                       th:value="${editMode} ? ${usuario.username} : ''"
                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
                        placeholder="ej: jperez"/>
             </div>
 
-            <!-- Password -->
+            <!-- Password (opcional en edición) -->
             <div>
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contrase&ntilde;a</label>
-                <input type="password" id="password" name="password" required minlength="6"
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                    Contrase&ntilde;a <span th:if="${editMode}" class="text-gray-400 font-normal">(dejar vac&iacute;o para mantener la actual)</span>
+                </label>
+                <input type="password" id="password" name="password"
+                       th:required="${editMode} ? false : true" minlength="6"
                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"/>
                 <p class="text-xs text-gray-400 mt-1">M&iacute;nimo 6 caracteres</p>
             </div>
@@ -39,7 +44,8 @@
                     <option value="">Seleccione una persona</option>
                     <option th:each="persona : ${allPersonas}"
                             th:value="${persona.id}"
-                            th:text="${persona.nombres + ' ' + persona.apellidoPaterno + ' (' + persona.numeroDocumento + ')'}">
+                            th:text="${persona.nombres + ' ' + persona.apellidoPaterno + ' (' + persona.numeroDocumento + ')'}"
+                            th:selected="${editMode && persona.id == usuario.persona.id}">
                         Persona
                     </option>
                 </select>
@@ -52,6 +58,7 @@
                     <div th:each="rol : ${allRoles}" class="flex items-center">
                         <input type="checkbox" th:id="'rol-' + ${rol.id}" name="rolIds"
                                th:value="${rol.id}"
+                               th:checked="${editMode && #lists.contains(usuarioRolIds, rol.id)}"
                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"/>
                         <label th:for="'rol-' + ${rol.id}" class="ml-2 text-sm text-gray-700">
                             <span th:text="${rol.nombre}">Rol</span>
@@ -65,8 +72,9 @@
             <!-- Actions -->
             <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
                 <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
-                    Crear Usuario
+                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+                        th:text="${editMode} ? 'Guardar Cambios' : 'Crear Usuario'">
+                    Guardar
                 </button>
                 <a th:href="@{/seguridad/usuarios}"
                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">

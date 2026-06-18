@@ -5,6 +5,7 @@ import com.clinica.clinica.paciente.entity.Paciente;
 import com.clinica.clinica.paciente.repository.PacienteRepository;
 import com.clinica.persona.entity.Persona;
 import com.clinica.persona.repository.PersonaRepository;
+import com.clinica.seguridad.service.NumeracionControlService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,9 @@ class PacienteServiceTest {
 
     @Mock
     private PersonaRepository personaRepository;
+
+    @Mock
+    private NumeracionControlService numeracionControlService;
 
     @InjectMocks
     private PacienteService pacienteService;
@@ -92,6 +96,7 @@ class PacienteServiceTest {
         var persona = createPersona(1L);
         when(pacienteRepository.existsByPersonaId(1L)).thenReturn(false);
         when(personaRepository.findById(1L)).thenReturn(Optional.of(persona));
+        when(numeracionControlService.nextCorrelativo("HC", "001")).thenReturn("HC-2026-000001");
 
         var savedPaciente = createPaciente(1L, persona);
         when(pacienteRepository.save(any())).thenReturn(savedPaciente);

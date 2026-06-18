@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{portal-seguridad/layouts/portal}">
+      layout:decorate="~{portal-administrativo/layouts/portal}">
 <head>
     <title>Usuarios - Seguridad</title>
 </head>
@@ -52,9 +52,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a th:href="@{/seguridad/usuarios/{id}/editar(id=${usuario.id})}"
-                           class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
-                        <a th:href="@{/seguridad/usuarios/{id}/roles(id=${usuario.id})}"
-                           class="text-indigo-600 hover:text-indigo-900">Editar Roles</a>
+                           class="text-indigo-600 hover:text-indigo-900">Editar</a>
                     </td>
                 </tr>
             </tbody>
