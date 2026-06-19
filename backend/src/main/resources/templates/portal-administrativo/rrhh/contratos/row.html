@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="row(contrato)">
+    <tr class="hover:bg-gray-50 transition-colors">
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+            <span th:text="${'#' + contrato.trabajadorId}">#1</span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700" th:text="${contrato.tipoContratoNombre}">Indeterminado</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+            th:text="${contrato.fechaInicio != null ? #temporals.format(contrato.fechaInicio, 'dd/MM/yyyy') : '-'}">01/01/2025</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+            th:text="${contrato.fechaFin != null ? #temporals.format(contrato.fechaFin, 'dd/MM/yyyy') : 'Indefinido'}">31/12/2025</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+            th:text="${contrato.remuneracion != null ? 'S/ ' + #numbers.formatDecimal(contrato.remuneracion, 1, 2) : '-'}">S/ 2500.00</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <span th:if="${contrato.estado == 'ACTIVO'}"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Activo</span>
+            <span th:if="${contrato.estado == 'SUSPENDIDO'}"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Suspendido</span>
+            <span th:if="${contrato.estado == 'RESUELTO'}"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Resuelto</span>
+            <span th:if="${contrato.estado == 'VENCIDO'}"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Vencido</span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+            <a th:href="@{/administrativo/rrhh/contratos/{id}(id=${contrato.id})}"
+               class="text-indigo-600 hover:text-indigo-900">
+                Ver
+            </a>
+            <button th:if="${contrato.estado == 'ACTIVO' || contrato.estado == 'SUSPENDIDO'}"
+                    hx-get="@{/administrativo/rrhh/contratos/{id}/editar(id=${contrato.id})}"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                    class="text-amber-600 hover:text-amber-900">
+                Editar
+            </button>
+            <button th:if="${contrato.estado == 'ACTIVO'}"
+                    hx-get="@{/administrativo/rrhh/contratos/{id}/confirmar-suspender(id=${contrato.id})}"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                    class="text-yellow-600 hover:text-yellow-900">
+                Suspender
+            </button>
+            <button th:if="${contrato.estado == 'SUSPENDIDO'}"
+                    hx-get="@{/administrativo/rrhh/contratos/{id}/confirmar-reactivar(id=${contrato.id})}"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                    class="text-green-600 hover:text-green-900">
+                Reactivar
+            </button>
+            <button th:if="${contrato.estado == 'ACTIVO' || contrato.estado == 'SUSPENDIDO'}"
+                    hx-get="@{/administrativo/rrhh/contratos/{id}/confirmar-resolver(id=${contrato.id})}"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                    class="text-red-600 hover:text-red-900">
+                Resolver
+            </button>
+        </td>
+    </tr>
+</th:block>
+</body>
+</html>

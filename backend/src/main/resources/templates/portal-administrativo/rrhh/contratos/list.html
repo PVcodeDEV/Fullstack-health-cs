@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{portal-administrativo/layouts/portal}">
+<head>
+    <title>Contratos - RRHH</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-[var(--portal-text)]">Contratos</h1>
+            <p class="text-gray-500 mt-1">Gesti&oacute;n de contratos de trabajadores</p>
+        </div>
+        <button hx-get="/administrativo/rrhh/contratos/nuevo"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Nuevo Contrato
+        </button>
+    </div>
+
+    <div th:if="${mensaje}" class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+        <span th:text="${mensaje}">Mensaje</span>
+    </div>
+    <div th:if="${error}" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <span th:text="${error}">Error</span>
+    </div>
+
+    <!-- Filter by Trabajador -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+        <div class="flex flex-wrap gap-4 items-end">
+            <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Trabajador</label>
+                <select name="trabajadorId"
+                        class="block w-64 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        onchange="if(this.value) window.location.href='/administrativo/rrhh/contratos?trabajadorId=' + this.value; else window.location.href='/administrativo/rrhh/contratos'">
+                    <option value="">Todos los trabajadores</option>
+                    <option th:each="t : ${trabajadores}"
+                            th:value="${t.id}"
+                            th:text="${t.personaNumeroDocumento + ' - ' + t.personaNombres + ' ' + (t.personaApellidoPaterno != null ? t.personaApellidoPaterno : '')}"
+                            th:selected="${trabajadorId != null && trabajadorId == t.id}">
+                        Documento - Nombre
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal container -->
+    <div id="modal-container"></div>
+
+    <!-- Table -->
+    <div id="table-container"
+         class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+         th:insert="~{portal-administrativo/rrhh/contratos/table :: table}">
+    </div>
+</main>
+</body>
+</html>

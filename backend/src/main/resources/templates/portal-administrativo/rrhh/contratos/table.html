@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="table">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trabajador</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Inicio</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Fin</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remuneraci&oacute;n</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200" id="table-body"
+               th:each="c : ${contratos}"
+               th:removeTag>
+            <th:block th:insert="~{portal-administrativo/rrhh/contratos/row :: row(contrato=${c})}"></th:block>
+        </tbody>
+    </table>
+    <div th:if="${#lists.isEmpty(contratos)}" class="text-center py-12 text-gray-500">
+        No se encontraron contratos
+    </div>
+</th:block>
+</body>
+</html>
