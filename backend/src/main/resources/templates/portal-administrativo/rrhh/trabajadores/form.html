@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="modal">
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+     id="modal-backdrop"
+     th:styleappend="'display: flex;'">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900" th:text="${editMode} ? 'Editar Trabajador' : 'Nuevo Trabajador'">
+                Nuevo Trabajador
+            </h2>
+            <button type="button"
+                    onclick="document.getElementById('modal-backdrop').remove()"
+                    class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Error message -->
+        <div th:if="${error}" class="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            <span th:text="${error}">Error message</span>
+        </div>
+
+        <!-- Form -->
+        <form th:action="${editMode} ? @{/administrativo/rrhh/trabajadores/{id}(id=${trabajador.id})} : @{/administrativo/rrhh/trabajadores}"
+              th:method="${editMode} ? post : post"
+              class="p-6 space-y-6">
+            <input type="hidden" name="_method" th:if="${editMode}" value="PUT" disabled="disabled"/>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- Persona -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Persona <span class="text-red-500">*</span></label>
+                    <select name="personaId" required
+                            class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Seleccione una persona</option>
+                        <option th:each="p : ${allPersonas}"
+                                th:value="${p.id}"
+                                th:text="${p.numeroDocumento + ' - ' + p.nombres + ' ' + p.apellidoPaterno}"
+                                th:selected="${editMode && trabajador.personaId == p.id}">
+                            Documento - Nombre Apellido
+                        </option>
+                    </select>
+                </div>
+
+                <!-- C&oacute;digo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">C&oacute;digo Trabajador <span class="text-red-500">*</span></label>
+                    <input type="text" name="codigoTrabajador" required maxlength="20"
+                           th:value="${editMode} ? ${trabajador.codigoTrabajador} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="Ej: TR-001">
+                </div>
+
+                <!-- Fecha Ingreso -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Ingreso <span class="text-red-500">*</span></label>
+                    <input type="date" name="fechaIngreso" required
+                           th:value="${editMode && trabajador.fechaIngreso != null} ? ${#temporals.format(trabajador.fechaIngreso, 'yyyy-MM-dd')} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+
+                <!-- Tipo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                    <select name="tipo"
+                            class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Seleccione</option>
+                        <option value="MEDICO" th:selected="${editMode && trabajador.tipo == 'MEDICO'}">M&eacute;dico</option>
+                        <option value="ENFERMERA" th:selected="${editMode && trabajador.tipo == 'ENFERMERA'}">Enfermera</option>
+                        <option value="NUTRICIONISTA" th:selected="${editMode && trabajador.tipo == 'NUTRICIONISTA'}">Nutricionista</option>
+                        <option value="TECNICO" th:selected="${editMode && trabajador.tipo == 'TECNICO'}">T&eacute;cnico</option>
+                        <option value="ADMINISTRATIVO" th:selected="${editMode && trabajador.tipo == 'ADMINISTRATIVO'}">Administrativo</option>
+                        <option value="OTROS" th:selected="${editMode && trabajador.tipo == 'OTROS'}">Otros</option>
+                    </select>
+                </div>
+
+                <!-- R&eacute;gimen Laboral -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">R&eacute;gimen Laboral</label>
+                    <select name="regimenLaboral"
+                            class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Seleccione</option>
+                        <option value="PRIVADO" th:selected="${editMode && trabajador.regimenLaboral == 'PRIVADO'}">Privado</option>
+                        <option value="CAS" th:selected="${editMode && trabajador.regimenLaboral == 'CAS'}">CAS</option>
+                        <option value="LOCACION" th:selected="${editMode && trabajador.regimenLaboral == 'LOCACION'}">Locaci&oacute;n</option>
+                        <option value="TERCEROS" th:selected="${editMode && trabajador.regimenLaboral == 'TERCEROS'}">Terceros</option>
+                    </select>
+                </div>
+
+                <!-- Cargo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+                    <input type="text" name="cargo" maxlength="200"
+                           th:value="${editMode} ? ${trabajador.cargo} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="Ej: M&eacute;dico Cirujano">
+                </div>
+
+                <!-- Separator -->
+                <div class="md:col-span-2 border-t border-gray-200 pt-4">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Informaci&oacute;n Bancaria</h3>
+                </div>
+
+                <!-- Banco -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Banco</label>
+                    <input type="text" name="banco" maxlength="60"
+                           th:value="${editMode} ? ${trabajador.banco} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="Ej: Banco de Cr&eacute;dito">
+                </div>
+
+                <!-- Cuenta Sueldo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Cuenta Sueldo</label>
+                    <input type="text" name="cuentaSueldo" maxlength="20"
+                           th:value="${editMode} ? ${trabajador.cuentaSueldo} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="N&uacute;mero de cuenta">
+                </div>
+
+                <!-- CCI -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">CCI</label>
+                    <input type="text" name="cci" maxlength="23"
+                           th:value="${editMode} ? ${trabajador.cci} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="C&oacute;digo de cuenta interbancario">
+                </div>
+
+                <!-- Separator -->
+                <div class="md:col-span-2 border-t border-gray-200 pt-4">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Informaci&oacute;n Adicional</h3>
+                </div>
+
+                <!-- Nro Colegiatura -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">N&uacute;mero Colegiatura</label>
+                    <input type="text" name="nroColegiatura" maxlength="20"
+                           th:value="${editMode} ? ${trabajador.nroColegiatura} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="Ej: CMP-12345">
+                    <p class="mt-1 text-xs text-gray-400">Obligatorio para M&eacute;dicos, Enfermeras y Nutricionistas</p>
+                </div>
+
+                <!-- Tipo Colegiatura -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo Colegiatura</label>
+                    <select name="tipoColegiaturaId"
+                            class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Seleccione</option>
+                        <option value="1" th:selected="${editMode && trabajador.tipoColegiaturaId == 1}">CMP</option>
+                        <option value="2" th:selected="${editMode && trabajador.tipoColegiaturaId == 2}">CEP</option>
+                        <option value="3" th:selected="${editMode && trabajador.tipoColegiaturaId == 3}">CTP</option>
+                    </select>
+                </div>
+
+                <!-- Contacto Nombre -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Contacto Emergencia</label>
+                    <input type="text" name="contactoNombre" maxlength="150"
+                           th:value="${editMode} ? ${trabajador.contactoNombre} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="Nombre del contacto">
+                </div>
+
+                <!-- Contacto Tel&eacute;fono -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tel&eacute;fono Contacto</label>
+                    <input type="text" name="contactoTelefono" maxlength="15"
+                           th:value="${editMode} ? ${trabajador.contactoTelefono} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="Tel&eacute;fono del contacto">
+                </div>
+
+                <!-- Cantidad Hijos -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad Hijos</label>
+                    <input type="number" name="cantidadHijos" min="0"
+                           th:value="${editMode} ? ${trabajador.cantidadHijos} : ''"
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="0">
+                </div>
+
+                <!-- Discapacidad -->
+                <div class="flex items-center">
+                    <input type="checkbox" name="discapacidad" id="discapacidad" value="true"
+                           th:checked="${editMode && trabajador.discapacidad}"
+                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                    <label for="discapacidad" class="ml-2 text-sm text-gray-700">Discapacidad</label>
+                </div>
+
+                <!-- Sindicalizado -->
+                <div class="flex items-center">
+                    <input type="checkbox" name="sindicalizado" id="sindicalizado" value="true"
+                           th:checked="${editMode && trabajador.sindicalizado}"
+                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                    <label for="sindicalizado" class="ml-2 text-sm text-gray-700">Sindicalizado</label>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                <button type="button"
+                        onclick="document.getElementById('modal-backdrop').remove()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Cancelar
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+                    <span th:text="${editMode} ? 'Actualizar' : 'Guardar'">Guardar</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</th:block>
+</body>
+</html>
