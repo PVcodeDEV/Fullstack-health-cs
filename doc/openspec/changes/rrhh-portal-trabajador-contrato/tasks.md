@@ -36,11 +36,11 @@ Chain strategy: feature-branch-chain
 
 ## Phase 2: Contrato Portal (PR #2)
 
-- [ ] 2.1 Create `ContratoPortalController.java` in `com.clinica.rrhh.controller` — list, create, edit, detail, resolver, suspender, reactivar
-- [ ] 2.2 Create `list.html` — contrato list page with layout, trabajador selector, table
-- [ ] 2.3 Create `table.html` — HTMX fragment for contrato table body with estado badges
-- [ ] 2.4 Create `row.html` — table row with estado badge + action buttons (resolver/suspender/reactivar)
-- [ ] 2.5 Create `form.html` — HTMX modal for create/edit with ContratoRequest fields
-- [ ] 2.6 Create `action-confirm.html` — HTMX confirmation modal for resolver/suspender/reactivar
-- [ ] 2.7 Create `detail.html` — contrato detail with all fields + linked trabajador info
-- [ ] 2.8 Write controller tests — MockMvc for list, create, resolver, suspender flows + authority checks
+- [x] 2.1 Create `ContratoPortalController.java` in `com.clinica.rrhh.controller` — list, create, edit, detail, resolver, suspender, reactivar
+- [x] 2.2 Create `list.html` — contrato list page with layout, trabajador selector, table
+- [x] 2.3 Create `table.html` — HTMX fragment for contrato table body with estado badges
+- [x] 2.4 Create `row.html` — table row with estado badge + action buttons (resolver/suspender/reactivar)
+- [x] 2.5 Create `form.html` — HTMX modal for create/edit with ContratoRequest fields
+- [x] 2.6 Create `action-confirm.html` — HTMX confirmation modal for resolver/suspender/reactivar
+- [x] 2.7 Create `detail.html` — contrato detail with all fields + linked trabajador info
+- [x] 2.8 Write controller tests — MockMvc for list, create, resolver, suspender flows + authority checks
