@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{portal-administrativo/layouts/portal}">
+<head>
+    <title>Usuarios - Seguridad</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-[var(--portal-text)]">Usuarios</h1>
+            <p class="text-gray-500 mt-1">Gesti&oacute;n de usuarios del sistema</p>
+        </div>
+        <a th:href="@{/seguridad/usuarios/nuevo}"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Nuevo Usuario
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Persona</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roles</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="usuario : ${usuarios}">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${usuario.username}">user</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${usuario.personaNombre}">Nombre Apellido</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span th:each="rol : ${usuario.roles}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 mr-1"
+                              th:text="${rol}">ROL</span>
+                        <span th:if="${#lists.isEmpty(usuario.roles)}"
+                              class="text-gray-400 italic">Sin roles</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span th:if="${usuario.activo}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Activo</span>
+                        <span th:unless="${usuario.activo}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactivo</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a th:href="@{/seguridad/usuarios/{id}/editar(id=${usuario.id})}"
+                           class="text-indigo-600 hover:text-indigo-900">Editar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${#lists.isEmpty(usuarios)}" class="text-center py-12 text-gray-500">
+            No hay usuarios registrados
+        </div>
+    </div>
+</main>
+</body>
+</html>

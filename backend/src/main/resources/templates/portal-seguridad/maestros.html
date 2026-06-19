@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{portal-administrativo/layouts/portal}">
+<head>
+    <title>Maestros - Seguridad</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]">Maestros</h1>
+        <p class="text-gray-500 mt-1">Cat&aacute;logos y tablas maestras del sistema</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Tipo Documento -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Tipos de Documento</h3>
+            <p class="text-sm text-gray-500 mb-4">DNI, Carn&eacute; de Extranjer&iacute;a, Pasaporte, RUC, etc.</p>
+        </div>
+
+        <!-- V&iacute;as -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">V&iacute;as</h3>
+            <p class="text-sm text-gray-500 mb-4">Avenidas, calles, jirones, pasajes y otras v&iacute;as de direcci&oacute;n.</p>
+        </div>
+
+        <!-- Zonas -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Zonas</h3>
+            <p class="text-sm text-gray-500 mb-4">Urbanizaciones, asociaciones de vivienda, centros poblados.</p>
+        </div>
+
+        <!-- Regiones / Ubigeo -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Ubigeo</h3>
+            <p class="text-sm text-gray-500 mb-4">Departamentos, provincias y distritos del Per&uacute;.</p>
+        </div>
+
+        <!-- Sede / Establecimiento -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Sedes</h3>
+            <p class="text-sm text-gray-500 mb-4">Establecimientos, locales y sucursales de la cl&iacute;nica.</p>
+        </div>
+    </div>
+</main>
+</body>
+</html>

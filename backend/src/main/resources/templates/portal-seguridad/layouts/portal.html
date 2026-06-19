@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/base}">
+<head>
+    <title layout:title-pattern="$CONTENT_TITLE - Seguridad - ERP Clínico">Seguridad - ERP Clínico</title>
+    <style>
+        :root {
+            --portal-primary: #6366f1;
+            --portal-secondary: #4f46e5;
+            --portal-accent: #f59e0b;
+            --portal-bg: #f8fafc;
+            --portal-text: #1e293b;
+            --portal-sidebar-bg: #ffffff;
+            --portal-sidebar-text: #475569;
+        }
+    </style>
+</head>
+<body>
+<main layout:fragment="content"></main>
+</body>
+</html>

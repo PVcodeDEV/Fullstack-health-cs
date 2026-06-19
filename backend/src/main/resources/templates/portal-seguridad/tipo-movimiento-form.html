@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{portal-administrativo/layouts/portal}">
+<head>
+    <title th:text="${tipoMovimiento != null} ? 'Editar Tipo Movimiento - Seguridad' : 'Nuevo Tipo Movimiento - Seguridad'">Tipos Movimiento - Seguridad</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]" th:text="${tipoMovimiento != null} ? 'Editar Tipo de Movimiento' : 'Nuevo Tipo de Movimiento'">Nuevo Tipo de Movimiento</h1>
+        <p class="text-gray-500 mt-1" th:text="${tipoMovimiento != null} ? 'Modifique los campos del tipo de movimiento' : 'Complete los campos para crear un nuevo tipo de movimiento'">
+            Complete los campos para crear un nuevo tipo de movimiento
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-2xl">
+        <form th:action="@{/seguridad/tipos-movimiento/nuevo}" method="post" class="space-y-6">
+            <!-- Código -->
+            <div>
+                <label for="codigo" class="block text-sm font-medium text-gray-700 mb-1">C&oacute;digo</label>
+                <input type="text" id="codigo" name="codigo" required maxlength="30"
+                       th:value="${tipoMovimiento != null ? tipoMovimiento.codigo : ''}"
+                       th:readonly="${tipoMovimiento != null}"
+                       th:classappend="${tipoMovimiento != null} ? 'bg-gray-50' : ''"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
+                       placeholder="ej: INGRESO"/>
+                <p class="text-xs text-gray-400 mt-1">Identificador &uacute;nico del tipo de movimiento (may&uacute;sculas, sin espacios)</p>
+            </div>
+
+            <!-- Nombre -->
+            <div>
+                <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                <input type="text" id="nombre" name="nombre" required maxlength="100"
+                       th:value="${tipoMovimiento != null ? tipoMovimiento.nombre : ''}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
+                       placeholder="ej: Ingreso de Mercader&iacute;a"/>
+            </div>
+
+            <!-- Módulo -->
+            <div>
+                <label for="modulo" class="block text-sm font-medium text-gray-700 mb-1">M&oacute;dulo</label>
+                <input type="text" id="modulo" name="modulo" required maxlength="50"
+                       th:value="${tipoMovimiento != null ? tipoMovimiento.modulo : ''}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
+                       placeholder="ej: farmacia"/>
+                <p class="text-xs text-gray-400 mt-1">M&oacute;dulo al que pertenece (farmacia, clinica, caja, etc.)</p>
+            </div>
+
+            <!-- Descripción -->
+            <div>
+                <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-1">Descripci&oacute;n</label>
+                <textarea id="descripcion" name="descripcion" rows="3" maxlength="255"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
+                          placeholder="Descripci&oacute;n opcional del tipo de movimiento"
+                          th:text="${tipoMovimiento != null ? tipoMovimiento.descripcion : ''}"></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
+                <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+                        th:text="${tipoMovimiento != null} ? 'Guardar Cambios' : 'Crear Tipo'">
+                    Crear Tipo
+                </button>
+                <a th:href="@{/seguridad/tipos-movimiento}"
+                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

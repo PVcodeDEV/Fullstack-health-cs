@@ -77,7 +77,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnhandled(Exception ex) {
         log.error("Unhandled exception: {}", ex.getMessage(), ex);
-        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                 "Error interno del servidor");
+        problem.setProperty("exception", ex.getClass().getSimpleName());
+        problem.setProperty("message", ex.getMessage());
+        return problem;
     }
 }

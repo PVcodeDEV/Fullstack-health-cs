@@ -29,7 +29,7 @@
                 </div>
             </div>
             <p class="text-xs text-gray-400">Productos con stock mínimo</p>
-            <a th:href="@{#}" class="mt-3 inline-block text-sm font-medium text-green-600 hover:text-green-700">
+            <a th:href="@{/farmacia/stock}" class="mt-3 inline-block text-sm font-medium text-green-600 hover:text-green-700">
                 Ver Stock →
             </a>
         </div>
@@ -48,7 +48,7 @@
                 </div>
             </div>
             <p class="text-xs text-gray-400">Recetas por despachar</p>
-            <a th:href="@{#}" class="mt-3 inline-block text-sm font-medium text-green-600 hover:text-green-700">
+            <a th:href="@{/farmacia/despachos}" class="mt-3 inline-block text-sm font-medium text-green-600 hover:text-green-700">
                 Ir a Despachos →
             </a>
         </div>
@@ -67,8 +67,67 @@
                 </div>
             </div>
             <p class="text-xs text-gray-400">Movimientos del día</p>
-            <a th:href="@{#}" class="mt-3 inline-block text-sm font-medium text-green-600 hover:text-green-700">
+            <a th:href="@{/farmacia/movimientos}" class="mt-3 inline-block text-sm font-medium text-green-600 hover:text-green-700">
                 Ver Movimientos →
+            </a>
+        </div>
+    </div>
+
+    <!-- Module Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Productos -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Productos</h3>
+            <p class="text-sm text-gray-500 mb-4">Catálogo de productos farmacéuticos y control de precios.</p>
+            <a th:href="@{/farmacia/productos}" class="text-sm font-medium text-green-600 hover:text-green-700">
+                Ir a Productos →
+            </a>
+        </div>
+
+        <!-- Almacenes -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Almacenes</h3>
+            <p class="text-sm text-gray-500 mb-4">Gestión de almacenes, ubicaciones y control de stock.</p>
+            <a th:href="@{/farmacia/almacenes}" class="text-sm font-medium text-green-600 hover:text-green-700">
+                Ir a Almacenes →
+            </a>
+        </div>
+
+        <!-- Despachos -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Despachos</h3>
+            <p class="text-sm text-gray-500 mb-4">Despacho de recetas, pedidos y control de entregas.</p>
+            <a th:href="@{/farmacia/despachos}" class="text-sm font-medium text-green-600 hover:text-green-700">
+                Ir a Despachos →
+            </a>
+        </div>
+
+        <!-- Mermas -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Mermas</h3>
+            <p class="text-sm text-gray-500 mb-4">Control de mermas, vencimientos y ajustes de inventario.</p>
+            <a th:href="@{/farmacia/mermas}" class="text-sm font-medium text-green-600 hover:text-green-700">
+                Ir a Mermas →
             </a>
         </div>
     </div>
@@ -78,15 +137,15 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Acceso Rápido</h3>
             <div class="space-y-3">
-                <a th:href="@{#}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+                <a th:href="@{/farmacia/stock}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
                     <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                     <span class="text-sm text-gray-700">Registrar Ingreso de Stock</span>
                 </a>
-                <a th:href="@{#}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+                <a th:href="@{/farmacia/despachos}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
                     <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                     <span class="text-sm text-gray-700">Realizar Despacho</span>
                 </a>
-                <a th:href="@{#}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+                <a th:href="@{/farmacia/mermas}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
                     <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                     <span class="text-sm text-gray-700">Revisar Mermas</span>
                 </a>

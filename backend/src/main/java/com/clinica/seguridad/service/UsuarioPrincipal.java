@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 public class UsuarioPrincipal implements UserDetails {
@@ -34,6 +35,18 @@ public class UsuarioPrincipal implements UserDetails {
     @Override
     public String getUsername() {
         return usuario.getUsername();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UsuarioPrincipal that)) return false;
+        return Objects.equals(getUsername(), that.getUsername());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getUsername());
     }
 
     @Override

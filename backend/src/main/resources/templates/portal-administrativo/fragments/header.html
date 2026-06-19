@@ -22,15 +22,6 @@
                 </span>
             </div>
 
-            <!-- Portal Switcher (only for ADMIN) -->
-            <div sec:authorize="hasRole('ADMIN')"
-                 class="hidden md:flex items-center gap-2">
-                <span class="text-xs text-gray-400 mr-1">Portales:</span>
-                <a th:href="@{/caja}" class="px-2 py-1 text-xs font-medium text-teal-700 bg-teal-50 rounded hover:bg-teal-100 transition-colors">Caja</a>
-                <a th:href="@{/asistencial}" class="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-50 rounded hover:bg-blue-100 transition-colors">Asistencial</a>
-                <a th:href="@{/farmacia}" class="px-2 py-1 text-xs font-medium text-green-700 bg-green-50 rounded hover:bg-green-100 transition-colors">Farmacia</a>
-            </div>
-
             <!-- Right side: user + logout -->
             <div class="flex items-center gap-4">
                 <div class="hidden sm:flex items-center gap-2 text-sm text-gray-700">
@@ -40,7 +31,7 @@
                     <span sec:authentication="principal.username" class="font-medium">Usuario</span>
                 </div>
 
-                <form th:action="@{/logout}" method="post" class="inline">
+                <form th:action="@{/administrativo/logout}" method="post" class="inline">
                     <button type="submit"
                             class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-colors"
                             sec:authorize="isAuthenticated()">

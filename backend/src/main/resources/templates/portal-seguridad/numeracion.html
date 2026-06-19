@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{portal-administrativo/layouts/portal}">
+<head>
+    <title>Numeraci&oacute;n - Seguridad</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-[var(--portal-text)]">Numeraci&oacute;n</h1>
+            <p class="text-gray-500 mt-1">Control de numeraci&oacute;n correlativa por entidad, serie y a&ntilde;o</p>
+        </div>
+        <a th:href="@{/seguridad/numeracion/nuevo}"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Nueva Serie
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entidad</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serie</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">A&ntilde;o</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correlativo Actual</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prefijo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Longitud</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="nc : ${numeraciones}">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${nc.entidad}">COMPROBANTE</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500" th:text="${nc.serie}">001</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${nc.anio}">2026</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
+                        <span th:if="${nc.prefijo}" th:text="${nc.prefijo}">HC-</span><span th:text="${nc.correlativoActual}">000001</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span th:if="${nc.prefijo}" class="font-mono" th:text="${nc.prefijo}">HC-</span>
+                        <span th:unless="${nc.prefijo}" class="text-gray-400 italic">—</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${nc.longitudCorrelativo}">6</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span th:if="${nc.activo}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Activo</span>
+                        <span th:unless="${nc.activo}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactivo</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a th:href="@{/seguridad/numeracion/{id}/editar(id=${nc.id})}"
+                           class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
+                        <form th:action="@{/seguridad/numeracion/{id}/toggle(id=${nc.id})}" method="post" class="inline">
+                            <button type="submit"
+                                    th:classappend="${nc.activo} ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'"
+                                    class="text-sm font-medium">
+                                <span th:text="${nc.activo} ? 'Desactivar' : 'Activar'"></span>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${#lists.isEmpty(numeraciones)}" class="text-center py-12 text-gray-500">
+            No hay entradas de numeraci&oacute;n registradas
+        </div>
+    </div>
+</main>
+</body>
+</html>

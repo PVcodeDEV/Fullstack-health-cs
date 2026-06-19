@@ -16,6 +16,7 @@ import com.clinica.maestro.entity.financiero.TipoComprobante;
 import com.clinica.maestro.repository.financiero.TipoComprobanteRepository;
 import com.clinica.persona.entity.Persona;
 import com.clinica.persona.repository.PersonaRepository;
+import com.clinica.seguridad.service.NumeracionControlService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,6 +50,7 @@ class ComprobanteServiceTest {
     @Mock private EmpresaRepository empresaRepository;
     @Mock private CuentaService cuentaService;
     @Mock private SunatXmlGenerator xmlGenerator;
+    @Mock private NumeracionControlService numeracionControlService;
 
     private ComprobanteService service;
 
@@ -70,7 +73,8 @@ class ComprobanteServiceTest {
     void setUp() {
         service = new ComprobanteService(
             comprobanteRepository, reprintLogRepository, tipoComprobanteRepository,
-            personaRepository, empresaRepository, cuentaService, xmlGenerator);
+            personaRepository, empresaRepository, cuentaService, xmlGenerator,
+            numeracionControlService);
 
         tipoBoleta = createTipoComprobante(1, "03", "BOLETA");
         tipoFactura = createTipoComprobante(2, "01", "FACTURA");
@@ -99,7 +103,7 @@ class ComprobanteServiceTest {
         // GIVEN a Boleta request with personaId
         when(tipoComprobanteRepository.findByCodigoSunat("03")).thenReturn(Optional.of(tipoBoleta));
         when(personaRepository.findById(PERSONA_ID)).thenReturn(Optional.of(persona));
-        when(comprobanteRepository.findMaxCorrelativoBySerie("001")).thenReturn(Optional.empty());
+        when(numeracionControlService.nextCorrelativo(eq("COMPROBANTE"), eq("001"))).thenReturn("00000001");
         when(xmlGenerator.generateInvoice(anyString(), anyString(), anyString(), any(), anyString(),
             anyString(), anyString(), anyString(), anyString(), any(), any(), any(), any()))
             .thenReturn("<xml>dummy-invoice</xml>");
@@ -141,7 +145,7 @@ class ComprobanteServiceTest {
         // GIVEN a Factura request with empresaId
         when(tipoComprobanteRepository.findByCodigoSunat("01")).thenReturn(Optional.of(tipoFactura));
         when(empresaRepository.findById(EMPRESA_ID)).thenReturn(Optional.of(empresa));
-        when(comprobanteRepository.findMaxCorrelativoBySerie("001")).thenReturn(Optional.of("00000005"));
+        when(numeracionControlService.nextCorrelativo(eq("COMPROBANTE"), eq("001"))).thenReturn("00000006");
         when(xmlGenerator.generateInvoice(anyString(), anyString(), anyString(), any(), anyString(),
             anyString(), anyString(), anyString(), anyString(), any(), any(), any(), any()))
             .thenReturn("<xml>dummy-invoice</xml>");
@@ -229,7 +233,7 @@ class ComprobanteServiceTest {
         // GIVEN existing correlativo = 00000005
         when(tipoComprobanteRepository.findByCodigoSunat("03")).thenReturn(Optional.of(tipoBoleta));
         when(personaRepository.findById(PERSONA_ID)).thenReturn(Optional.of(persona));
-        when(comprobanteRepository.findMaxCorrelativoBySerie("001")).thenReturn(Optional.of("00000005"));
+        when(numeracionControlService.nextCorrelativo(eq("COMPROBANTE"), eq("001"))).thenReturn("00000006");
         when(xmlGenerator.generateInvoice(anyString(), anyString(), anyString(), any(), anyString(),
             anyString(), anyString(), anyString(), anyString(), any(), any(), any(), any()))
             .thenReturn("<xml>dummy</xml>");
@@ -275,7 +279,7 @@ class ComprobanteServiceTest {
         Comprobante original = createEmittedComprobante(1L, "001", "00000001", new BigDecimal("500.00"));
         when(comprobanteRepository.findById(1L)).thenReturn(Optional.of(original));
         when(tipoComprobanteRepository.findByCodigoSunat("07")).thenReturn(Optional.of(tipoNotaCredito));
-        when(comprobanteRepository.findMaxCorrelativoBySerie("001")).thenReturn(Optional.of("00000001"));
+        when(numeracionControlService.nextCorrelativo(eq("COMPROBANTE"), eq("001"))).thenReturn("00000002");
         when(xmlGenerator.generateCreditNote(anyString(), anyString(), any(), anyString(),
             anyString(), anyString(), anyString(), anyString(), any(), any(), any(), any(),
             anyString(), anyString(), anyString())).thenReturn("<xml>nc</xml>");
@@ -315,7 +319,7 @@ class ComprobanteServiceTest {
         Comprobante original = createEmittedComprobante(1L, "001", "00000001", new BigDecimal("1000.00"));
         when(comprobanteRepository.findById(1L)).thenReturn(Optional.of(original));
         when(tipoComprobanteRepository.findByCodigoSunat("07")).thenReturn(Optional.of(tipoNotaCredito));
-        when(comprobanteRepository.findMaxCorrelativoBySerie("001")).thenReturn(Optional.of("00000001"));
+        when(numeracionControlService.nextCorrelativo(eq("COMPROBANTE"), eq("001"))).thenReturn("00000002");
         when(xmlGenerator.generateCreditNote(anyString(), anyString(), any(), anyString(),
             anyString(), anyString(), anyString(), anyString(), any(), any(), any(), any(),
             anyString(), anyString(), anyString())).thenReturn("<xml>nc</xml>");
@@ -443,7 +447,7 @@ class ComprobanteServiceTest {
         // GIVEN
         when(tipoComprobanteRepository.findByCodigoSunat("03")).thenReturn(Optional.of(tipoBoleta));
         when(personaRepository.findById(PERSONA_ID)).thenReturn(Optional.of(persona));
-        when(comprobanteRepository.findMaxCorrelativoBySerie("001")).thenReturn(Optional.empty());
+        when(numeracionControlService.nextCorrelativo(eq("COMPROBANTE"), eq("001"))).thenReturn("00000001");
         when(xmlGenerator.generateInvoice(anyString(), anyString(), anyString(), any(), anyString(),
             anyString(), anyString(), anyString(), anyString(), any(), any(), any(), any()))
             .thenReturn("<xml>valid-ubl-21-invoice</xml>");

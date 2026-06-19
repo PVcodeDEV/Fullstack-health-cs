@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{portal-administrativo/layouts/portal}">
+<head>
+    <title>Config. API - Seguridad</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-[var(--portal-text)]">Configuraci&oacute;n API</h1>
+        <p class="text-gray-500 mt-1">Par&aacute;metros de configuraci&oacute;n para integraciones externas</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">M&oacute;dulo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clave</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="config : ${configApiList}">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${config.modulo}">maestro</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-medium text-gray-900" th:text="${config.clave}">base_url</td>
+                    <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                        <code class="text-xs bg-gray-100 px-2 py-1 rounded" th:text="${config.valor}">https://api.example.com</code>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                              th:text="${config.tipo}">string</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span th:if="${config.activo}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Activo</span>
+                        <span th:unless="${config.activo}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactivo</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button th:attr="data-id=${config.id},data-clave=${config.clave},data-valor=${config.valor},data-tipo=${config.tipo},data-modulo=${config.modulo}"
+                                onclick="editarConfig(this)"
+                                class="text-indigo-600 hover:text-indigo-900">Editar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${#lists.isEmpty(configApiList)}" class="text-center py-12 text-gray-500">
+            No hay entradas de configuraci&oacute;n
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div id="editModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Editar Configuraci&oacute;n</h3>
+                <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <form th:action="@{/api/v1/seguridad/configuracion}" method="post" class="space-y-4">
+                <input type="hidden" name="_method" value="PUT"/>
+                <input type="hidden" id="editId" name="id"/>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">M&oacute;dulo</label>
+                    <input type="text" id="editModulo" name="modulo" required readonly
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Clave</label>
+                    <input type="text" id="editClave" name="clave" required readonly
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Valor</label>
+                    <input type="text" id="editValor" name="valor"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                    <input type="text" id="editTipo" name="tipo" readonly
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm"/>
+                </div>
+                <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
+                    <button type="submit"
+                            class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+                        Guardar Cambios
+                    </button>
+                    <button type="button" onclick="cerrarModal()"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function editarConfig(btn) {
+            document.getElementById('editId').value = btn.dataset.id;
+            document.getElementById('editModulo').value = btn.dataset.modulo;
+            document.getElementById('editClave').value = btn.dataset.clave;
+            document.getElementById('editValor').value = btn.dataset.valor;
+            document.getElementById('editTipo').value = btn.dataset.tipo;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function cerrarModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        // Close modal on Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') cerrarModal();
+        });
+
+        // Close modal on backdrop click
+        document.getElementById('editModal')?.addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
+        });
+    </script>
+</main>
+</body>
+</html>
