@@ -229,6 +229,12 @@ public class SeguridadPortalController {
         return "portal-seguridad/permisos";
     }
 
+    @GetMapping("/maestros")
+    public String listMaestros(Model model) {
+        setPortalAttributes(model, "maestros");
+        return "portal-seguridad/maestros";
+    }
+
     @GetMapping("/configuracion")
     public String listConfigApi(Model model) {
         model.addAttribute("configApiList", configuracionApiService.findAll());

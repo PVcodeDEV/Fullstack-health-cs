@@ -33,7 +33,7 @@ public class PortalLoginController {
             "/administrativo/login")
     );
 
-    @GetMapping({"/login", "/administrativo/login", "/farmacia/login", "/caja/login", "/asistencial/login"})
+    @GetMapping({"/administrativo/login", "/farmacia/login", "/caja/login", "/asistencial/login"})
     public String login(HttpServletRequest request, Model model) {
         String path = request.getRequestURI();
         String portal = "asistencial";
@@ -53,6 +53,15 @@ public class PortalLoginController {
         model.addAttribute("checkClass", t.checkClass);
         model.addAttribute("loginUrl", t.loginUrl);
         return "login";
+    }
+
+    /**
+     * Redirect the shared /login to farmacia portal login.
+     * Each portal has its own themed login page.
+     */
+    @GetMapping("/login")
+    public String redirectLogin() {
+        return "redirect:/farmacia/login";
     }
 
     private record Theme(String name, String desc, String bgClass, String btnClass,

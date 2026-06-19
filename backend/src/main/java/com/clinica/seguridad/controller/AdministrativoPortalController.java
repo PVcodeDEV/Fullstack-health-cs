@@ -23,11 +23,11 @@ public class AdministrativoPortalController {
         return "portal-administrativo/modulo";
     }
 
-    @GetMapping("/administrativo/maestros")
-    public String maestros(Model model) {
-        model.addAttribute("moduleName", "Maestros");
-        model.addAttribute("moduleDescription", "Catálogos y tablas maestras del sistema");
-        setPortalAttributes(model, "maestros");
+    @GetMapping("/administrativo/contabilidad")
+    public String contabilidad(Model model) {
+        model.addAttribute("moduleName", "Contabilidad");
+        model.addAttribute("moduleDescription", "Gestión contable, libros, asientos y reportes financieros");
+        setPortalAttributes(model, "contabilidad");
         return "portal-administrativo/modulo";
     }
 

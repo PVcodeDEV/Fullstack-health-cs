@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.core.session.SessionRegistry;
 
 /**
  * Security configuration with per-portal browser chains for session isolation.
@@ -42,13 +43,16 @@ public class SecurityConfig {
     private final UsuarioDetailsService usuarioDetailsService;
     private final JwtAuthConverter jwtAuthConverter;
     private final PasswordEncoder passwordEncoder;
+    private final SessionRegistry sessionRegistry;
 
     public SecurityConfig(UsuarioDetailsService usuarioDetailsService,
                           JwtAuthConverter jwtAuthConverter,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          SessionRegistry sessionRegistry) {
         this.usuarioDetailsService = usuarioDetailsService;
         this.jwtAuthConverter = jwtAuthConverter;
         this.passwordEncoder = passwordEncoder;
+        this.sessionRegistry = sessionRegistry;
     }
 
     private DaoAuthenticationProvider authProvider() {
@@ -78,6 +82,9 @@ public class SecurityConfig {
      * Deletes the global (Path=/) JSESSIONID cookie and creates a new one
      * scoped to the portal path. This makes the browser only send the cookie
      * for requests within that portal's URL path, effectively isolating sessions.
+     * <p>
+     * The administrativo portal keeps Path=/ because it manages security and
+     * master data pages served under /seguridad/ and other admin paths.</p>
      */
     private static void scopeSessionCookie(HttpServletRequest request, HttpServletResponse response, String portal) {
         String sessionId = request.getSession().getId();
@@ -93,6 +100,14 @@ public class SecurityConfig {
         portalCookie.setHttpOnly(true);
         portalCookie.setSecure(request.isSecure());
         response.addCookie(portalCookie);
+        // For administrativo, also keep a Path=/ cookie so /seguridad/* pages work
+        if ("administrativo".equals(portal)) {
+            Cookie globalCookie = new Cookie("JSESSIONID", sessionId);
+            globalCookie.setPath("/");
+            globalCookie.setHttpOnly(true);
+            globalCookie.setSecure(request.isSecure());
+            response.addCookie(globalCookie);
+        }
     }
 
     /**
@@ -156,7 +171,7 @@ public class SecurityConfig {
     @Order(3)
     public SecurityFilterChain administrativoChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/administrativo/**")
+            .securityMatcher("/administrativo/**", "/seguridad/**")
             .authenticationProvider(authProvider())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/administrativo/login", "/administrativo/cambiar-contrasena").permitAll()
@@ -168,6 +183,12 @@ public class SecurityConfig {
                 .successHandler(portalSuccessHandler("administrativo"))
                 .permitAll()
             )
+            .sessionManagement(session -> session
+                .sessionFixation().changeSessionId()
+                .maximumSessions(1)
+                .sessionRegistry(sessionRegistry)
+                .maxSessionsPreventsLogin(false)
+                .expiredUrl("/administrativo/login?expired"))
             .rememberMe(remember -> remember
                 .key("ClinicaErpAdminKey2026")
                 .tokenValiditySeconds(1209600))
@@ -200,6 +221,12 @@ public class SecurityConfig {
                 .successHandler(portalSuccessHandler("farmacia"))
                 .permitAll()
             )
+            .sessionManagement(session -> session
+                .sessionFixation().changeSessionId()
+                .maximumSessions(1)
+                .sessionRegistry(sessionRegistry)
+                .maxSessionsPreventsLogin(false)
+                .expiredUrl("/farmacia/login?expired"))
             .rememberMe(remember -> remember
                 .key("ClinicaErpFarmaciaKey2026")
                 .tokenValiditySeconds(1209600))
@@ -232,6 +259,12 @@ public class SecurityConfig {
                 .successHandler(portalSuccessHandler("caja"))
                 .permitAll()
             )
+            .sessionManagement(session -> session
+                .sessionFixation().changeSessionId()
+                .maximumSessions(1)
+                .sessionRegistry(sessionRegistry)
+                .maxSessionsPreventsLogin(false)
+                .expiredUrl("/caja/login?expired"))
             .rememberMe(remember -> remember
                 .key("ClinicaErpCajaKey2026")
                 .tokenValiditySeconds(1209600))
@@ -264,6 +297,12 @@ public class SecurityConfig {
                 .successHandler(portalSuccessHandler("asistencial"))
                 .permitAll()
             )
+            .sessionManagement(session -> session
+                .sessionFixation().changeSessionId()
+                .maximumSessions(1)
+                .sessionRegistry(sessionRegistry)
+                .maxSessionsPreventsLogin(false)
+                .expiredUrl("/asistencial/login?expired"))
             .rememberMe(remember -> remember
                 .key("ClinicaErpAsistencialKey2026")
                 .tokenValiditySeconds(1209600))
@@ -278,8 +317,9 @@ public class SecurityConfig {
     }
 
     /**
-     * Default browser chain — shared pages outside portal paths.
-     * Login, password change, static resources, h2-console.
+     * Default catch-all chain — static resources and dev console are permitted,
+     * everything else requires authentication (will 302 to login page).
+     * No form login — all login flows are portal-specific (/{portal}/login).
      */
     @Bean
     @Order(7)
@@ -287,23 +327,11 @@ public class SecurityConfig {
         http
             .authenticationProvider(authProvider())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/cambiar-contrasena", "/css/**", "/js/**", "/h2-console/**").permitAll()
+                .requestMatchers("/login", "/css/**", "/js/**", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .successHandler((request, response, authentication) -> {
-                    var principal = (com.clinica.seguridad.service.UsuarioPrincipal) authentication.getPrincipal();
-                    if (Boolean.TRUE.equals(principal.getUsuario().getPasswordChangeRequired())) {
-                        response.sendRedirect("/cambiar-contrasena");
-                    } else {
-                        response.sendRedirect("/");
-                    }
-                })
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout"))
+            .formLogin(form -> form.disable())
+            .logout(logout -> logout.disable())
             .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
         return http.build();

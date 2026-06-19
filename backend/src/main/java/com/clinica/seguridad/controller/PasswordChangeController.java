@@ -42,7 +42,9 @@ public class PasswordChangeController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:" + detectPortalPath(request) + "/login";
         }
+        String portal = detectPortalFromUri(request);
         model.addAttribute("username", authentication.getName());
+        model.addAttribute("portal", portal);
         return "password-change";
     }
 
@@ -103,10 +105,19 @@ public class PasswordChangeController {
      * Returns "/administrativo", "/farmacia", "/caja", "/asistencial", or "" (default).
      */
     private String detectPortalPath(HttpServletRequest request) {
+        String portal = detectPortalFromUri(request);
+        return portal.isEmpty() ? "" : "/" + portal;
+    }
+
+    /**
+     * Extracts just the portal name from the request URI.
+     * Returns "administrativo", "farmacia", "caja", "asistencial", or "".
+     */
+    private String detectPortalFromUri(HttpServletRequest request) {
         String uri = request.getRequestURI();
         Matcher m = PORTAL_PATTERN.matcher(uri);
         if (m.find()) {
-            return "/" + m.group(1);
+            return m.group(1);
         }
         return "";
     }
