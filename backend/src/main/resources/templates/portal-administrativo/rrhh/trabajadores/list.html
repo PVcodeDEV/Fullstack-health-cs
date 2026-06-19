@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{portal-administrativo/layouts/portal}">
+<head>
+    <title>Trabajadores - RRHH</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-[var(--portal-text)]">Trabajadores</h1>
+            <p class="text-gray-500 mt-1">Gesti&oacute;n de trabajadores del centro de salud</p>
+        </div>
+        <button hx-get="/administrativo/rrhh/trabajadores/nuevo"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Nuevo Trabajador
+        </button>
+    </div>
+
+    <div th:if="${mensaje}" class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+        <span th:text="${mensaje}">Mensaje</span>
+    </div>
+    <div th:if="${error}" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <span th:text="${error}">Error</span>
+    </div>
+
+    <!-- Search / Filters -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+        <div class="flex flex-wrap gap-4 items-end">
+            <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Tipo</label>
+                <select name="tipo" id="filter-tipo"
+                        class="block w-48 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        hx-get="/administrativo/rrhh/trabajadores/table"
+                        hx-target="#table-container"
+                        hx-trigger="change">
+                    <option value="">Todos</option>
+                    <option value="MEDICO">M&eacute;dico</option>
+                    <option value="ENFERMERA">Enfermera</option>
+                    <option value="NUTRICIONISTA">Nutricionista</option>
+                    <option value="TECNICO">T&eacute;cnico</option>
+                    <option value="ADMINISTRATIVO">Administrativo</option>
+                    <option value="OTROS">Otros</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">R&eacute;gimen</label>
+                <select name="regimenLaboral" id="filter-regimen"
+                        class="block w-48 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        hx-get="/administrativo/rrhh/trabajadores/table"
+                        hx-target="#table-container"
+                        hx-trigger="change">
+                    <option value="">Todos</option>
+                    <option value="PRIVADO">Privado</option>
+                    <option value="CAS">CAS</option>
+                    <option value="LOCACION">Locaci&oacute;n</option>
+                    <option value="TERCEROS">Terceros</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Buscar</label>
+                <input type="text" id="filter-search" placeholder="Nombre, apellido o documento..."
+                       class="block w-64 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                       hx-get="/administrativo/rrhh/trabajadores/table"
+                       hx-target="#table-container"
+                       hx-trigger="keyup changed delay:300ms">
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal container -->
+    <div id="modal-container"></div>
+
+    <!-- Table -->
+    <div id="table-container"
+         class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+         th:insert="~{portal-administrativo/rrhh/trabajadores/table :: table}">
+    </div>
+</main>
+</body>
+</html>

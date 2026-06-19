@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Contratos sub-tab -->
+<th:block th:fragment="contratos">
+    <div th:if="${#lists.isEmpty(contratos)}" class="text-center py-8 text-gray-500">
+        <p>No tiene contratos registrados</p>
+    </div>
+    <div th:unless="${#lists.isEmpty(contratos)}">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Inicio</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Fin</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remuneraci&oacute;n</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                <tr th:each="c : ${contratos}" class="hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm text-gray-900" th:text="${c.tipoContratoNombre}">Tipo</td>
+                    <td class="px-4 py-3 text-sm text-gray-500" th:text="${c.fechaInicio != null ? #temporals.format(c.fechaInicio, 'dd/MM/yyyy') : '-'}">01/01/2025</td>
+                    <td class="px-4 py-3 text-sm text-gray-500" th:text="${c.fechaFin != null ? #temporals.format(c.fechaFin, 'dd/MM/yyyy') : 'Indefinido'}">31/12/2025</td>
+                    <td class="px-4 py-3 text-sm text-gray-500" th:text="${c.remuneracion != null ? 'S/ ' + #numbers.formatDecimal(c.remuneracion, 1, 2) : '-'}">S/ 2500.00</td>
+                    <td class="px-4 py-3">
+                        <span th:if="${c.estado == 'ACTIVO'}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Activo</span>
+                        <span th:if="${c.estado == 'VENCIDO'}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Vencido</span>
+                        <span th:if="${c.estado == 'RESUELTO'}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Resuelto</span>
+                        <span th:if="${c.estado == 'SUSPENDIDO'}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Suspendido</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</th:block>
+
+<!-- Periodos Laborales sub-tab -->
+<th:block th:fragment="periodos">
+    <div th:if="${#lists.isEmpty(periodos)}" class="text-center py-8 text-gray-500">
+        <p>No tiene periodos laborales registrados</p>
+    </div>
+    <div th:unless="${#lists.isEmpty(periodos)}">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Inicio</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Cese</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Motivo Cese</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reingreso</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                <tr th:each="p : ${periodos}" class="hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm text-gray-900" th:text="${p.fechaInicio != null ? #temporals.format(p.fechaInicio, 'dd/MM/yyyy') : '-'}">01/01/2025</td>
+                    <td class="px-4 py-3 text-sm text-gray-500" th:text="${p.fechaCese != null ? #temporals.format(p.fechaCese, 'dd/MM/yyyy') : '-'}">-</td>
+                    <td class="px-4 py-3 text-sm text-gray-500" th:text="${p.motivoCese != null ? p.motivoCese : '-'}">Renuncia</td>
+                    <td class="px-4 py-3 text-sm text-gray-500">
+                        <span th:if="${p.esReingreso}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">S&iacute;</span>
+                        <span th:unless="${p.esReingreso}" class="text-gray-400">No</span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <span th:if="${p.activo}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Activo</span>
+                        <span th:unless="${p.activo}"
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Cerrado</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</th:block>
+</body>
+</html>
